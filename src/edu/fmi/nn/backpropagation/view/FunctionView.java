@@ -1,14 +1,28 @@
 package edu.fmi.nn.backpropagation.view;
 
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.awt.HeadlessException;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.Point;
 
 import javax.swing.JFrame;
 
-public class FunctionView extends JFrame {
+import edu.fmi.nn.backpropagation.ModelListener;
+import edu.fmi.nn.backpropagation.PointsListener;
+import edu.fmi.nn.backpropagation.model.FunctionModel;
+
+public class FunctionView extends JFrame implements ModelListener {
+
+	/**
+	 * {@value}
+	 */
+	private static final int HEIGHT_POINT = 4;
+
+	/**
+	 * {@value}
+	 */
+	private static final int WIDTH_POINT = 4;
 
 	/**
 	 * {@value}
@@ -25,30 +39,11 @@ public class FunctionView extends JFrame {
 	 */
 	private static final long serialVersionUID = -4178865610705123099L;
 
-	private class FunctionMouseListener implements MouseListener {
+	public static class SimplePointsListener implements PointsListener {
 
 		@Override
-		public void mouseClicked(MouseEvent e) {
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
+		public void onPointAdded(int x, int y) {
 			// blank
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-			// blank
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-
 		}
 
 	}
@@ -68,17 +63,24 @@ public class FunctionView extends JFrame {
 	public FunctionView(String title, GraphicsConfiguration gc) {
 		super(title, gc);
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
 		final Dimension size = new Dimension(WIDTH_FRAME, HEIGHT_FRAME);
 		setMinimumSize(size);
 		setMaximumSize(size);
 		setPreferredSize(size);
 
-		addMouseListener(new FunctionMouseListener());
+		setResizable(false);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		pack();
 		setVisible(true);
+	}
+
+	@Override
+	public void onModelChanged(FunctionModel model) {
+		final Graphics graphics = getGraphics();
+		for (final Point point : model.getPoints()) {
+			graphics.fillRect(point.x, point.y, WIDTH_POINT, HEIGHT_POINT);
+		}
 	}
 
 }

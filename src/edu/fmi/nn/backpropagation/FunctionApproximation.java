@@ -14,8 +14,12 @@ public class FunctionApproximation {
 	public FunctionApproximation() {
 		model = new FunctionModel();
 		view = new FunctionView("Function Approximation");
+
+		view.addMouseListener(model);
+		model.setListener(view);
 	}
 
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 
