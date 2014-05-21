@@ -14,7 +14,13 @@ import edu.fmi.nn.backpropagation.model.FunctionModel;
 
 public class FunctionView extends JFrame implements ModelListener {
 
-	private static final int STEP_X_COORDINATE_SYSTEM = 40;
+	private static final int OFFSET_X_COORDINATE_SYSTEM_TEXT = 10;
+
+	private static final int OFFSET_Y_COORDINATE_SYSTEM_TEXT = 20;
+
+	private static final int OFFSET_COORDINATE_SYSTEM_SEPARATOR = 5;
+
+	private static final int STEP_COORDINATE_SYSTEM_SEPARATOR = 40;
 
 	/**
 	 * {@value}
@@ -91,15 +97,34 @@ public class FunctionView extends JFrame implements ModelListener {
 
 		drawAxis(graphics);
 		drawXAxisSeparators(graphics);
+		drawYAxisSeparators(graphics);
+	}
+
+	private void drawYAxisSeparators(final Graphics graphics) {
+		final int ySteps = HEIGHT_FRAME / STEP_COORDINATE_SYSTEM_SEPARATOR;
+		int start = ySteps / 2;
+		for (int i = STEP_COORDINATE_SYSTEM_SEPARATOR; i < HEIGHT_FRAME; i += STEP_COORDINATE_SYSTEM_SEPARATOR) {
+			graphics.drawLine(WIDTH_FRAME / 2
+					- OFFSET_COORDINATE_SYSTEM_SEPARATOR, i, WIDTH_FRAME / 2
+					+ OFFSET_COORDINATE_SYSTEM_SEPARATOR, i);
+			if (start != 0) {
+				graphics.drawString(Integer.toString(start), WIDTH_FRAME / 2
+						- OFFSET_Y_COORDINATE_SYSTEM_TEXT, i);
+			}
+			--start;
+		}
 	}
 
 	private void drawXAxisSeparators(Graphics graphics) {
-		final int xSteps = WIDTH_FRAME / STEP_X_COORDINATE_SYSTEM;
+		final int xSteps = WIDTH_FRAME / STEP_COORDINATE_SYSTEM_SEPARATOR;
 		int start = -xSteps / 2 + 1;
-		for (int i = STEP_X_COORDINATE_SYSTEM; i < WIDTH_FRAME; i += STEP_X_COORDINATE_SYSTEM) {
-			graphics.drawLine(i, HEIGHT_FRAME / 2 - 5, i, HEIGHT_FRAME / 2 + 5);
-			graphics.drawString(Integer.toString(start), i - 10,
-					HEIGHT_FRAME / 2 + 20);
+		for (int i = STEP_COORDINATE_SYSTEM_SEPARATOR; i < WIDTH_FRAME; i += STEP_COORDINATE_SYSTEM_SEPARATOR) {
+			graphics.drawLine(i, HEIGHT_FRAME / 2
+					- OFFSET_COORDINATE_SYSTEM_SEPARATOR, i, HEIGHT_FRAME / 2
+					+ OFFSET_COORDINATE_SYSTEM_SEPARATOR);
+			graphics.drawString(Integer.toString(start), i
+					- OFFSET_X_COORDINATE_SYSTEM_TEXT, HEIGHT_FRAME / 2
+					+ OFFSET_Y_COORDINATE_SYSTEM_TEXT);
 			++start;
 		}
 	}
