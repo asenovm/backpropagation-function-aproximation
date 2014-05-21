@@ -14,6 +14,8 @@ import edu.fmi.nn.backpropagation.model.FunctionModel;
 
 public class FunctionView extends JFrame implements ModelListener {
 
+	private static final int STEP_X_COORDINATE_SYSTEM = 40;
+
 	/**
 	 * {@value}
 	 */
@@ -83,4 +85,27 @@ public class FunctionView extends JFrame implements ModelListener {
 		}
 	}
 
+	@Override
+	public void paint(Graphics graphics) {
+		super.paint(graphics);
+
+		drawAxis(graphics);
+		drawXAxisSeparators(graphics);
+	}
+
+	private void drawXAxisSeparators(Graphics graphics) {
+		final int xSteps = WIDTH_FRAME / STEP_X_COORDINATE_SYSTEM;
+		int start = -xSteps / 2 + 1;
+		for (int i = STEP_X_COORDINATE_SYSTEM; i < WIDTH_FRAME; i += STEP_X_COORDINATE_SYSTEM) {
+			graphics.drawLine(i, HEIGHT_FRAME / 2 - 5, i, HEIGHT_FRAME / 2 + 5);
+			graphics.drawString(Integer.toString(start), i - 10,
+					HEIGHT_FRAME / 2 + 20);
+			++start;
+		}
+	}
+
+	private void drawAxis(Graphics graphics) {
+		graphics.drawLine(0, HEIGHT_FRAME / 2, WIDTH_FRAME, HEIGHT_FRAME / 2);
+		graphics.drawLine(WIDTH_FRAME / 2, 0, WIDTH_FRAME / 2, HEIGHT_FRAME);
+	}
 }
