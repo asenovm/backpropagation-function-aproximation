@@ -1,6 +1,10 @@
 package edu.fmi.nn.backpropagation;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
+import edu.fmi.nn.backpropagation.Layer.Type;
 
 public class NeuralNetwork {
 	private int inputNodesCount;
@@ -28,29 +32,49 @@ public class NeuralNetwork {
 	private double[] hiddenToOutputPreviousBiasesDelta;
 
 	public NeuralNetwork(int numInput, int numHidden, int numOutput) {
-		this.inputNodesCount = numInput;
-		this.hiddenNodesCount = numHidden;
-		this.outputNodesCount = numOutput;
 
-		inputs = new double[numInput];
-		inputToHiddenWeights = Helpers.MakeMatrix(numInput, numHidden);
-		inputToHiddenSums = new double[numHidden];
-		inputToHiddenBiases = new double[numHidden];
-		inputToHiddenOutputs = new double[numHidden];
-		hiddenToOutputWeights = Helpers.MakeMatrix(numHidden, numOutput);
-		hiddenToOutputSums = new double[numOutput];
-		hiddenToOutputBiases = new double[numOutput];
-		outputs = new double[numOutput];
+		final List<Node> inputNodes = new LinkedList<Node>();
+		for (int i = 0; i < numInput; ++i) {
+			inputNodes.add(new Node());
+		}
 
-		outputGradents = new double[numOutput];
-		hiddenGradients = new double[numHidden];
+		final List<Node> hiddenNodes = new LinkedList<Node>();
+		for (int i = 0; i < numHidden; ++i) {
+			hiddenNodes.add(new Node());
+		}
 
-		inputToHiddenPreviousWeightsDelta = Helpers.MakeMatrix(numInput,
-				numHidden);
-		inputToHiddenPreviousBiasesDelta = new double[numHidden];
-		hiddenToOutputPreviousWeightsDelta = Helpers.MakeMatrix(numHidden,
-				numOutput);
-		hiddenToOutputPreviousBiasesDelta = new double[numOutput];
+		final List<Node> outputNodes = new LinkedList<Node>();
+		for (int i = 0; i < numOutput; ++i) {
+			outputNodes.add(new Node());
+		}
+
+		final Layer inputLayer = new Layer(inputNodes, Type.INPUT);
+		final Layer hiddenLayer = new Layer(hiddenNodes, Type.HIDDEN);
+		final Layer outputLayer = new Layer(outputNodes, Type.OUTPUT);
+
+		// this.inputNodesCount = numInput;
+		// this.hiddenNodesCount = numHidden;
+		// this.outputNodesCount = numOutput;
+		//
+		// inputs = new double[numInput];
+		// inputToHiddenWeights = Helpers.MakeMatrix(numInput, numHidden);
+		// inputToHiddenSums = new double[numHidden];
+		// inputToHiddenBiases = new double[numHidden];
+		// inputToHiddenOutputs = new double[numHidden];
+		// hiddenToOutputWeights = Helpers.MakeMatrix(numHidden, numOutput);
+		// hiddenToOutputSums = new double[numOutput];
+		// hiddenToOutputBiases = new double[numOutput];
+		// outputs = new double[numOutput];
+		//
+		// outputGradents = new double[numOutput];
+		// hiddenGradients = new double[numHidden];
+		//
+		// inputToHiddenPreviousWeightsDelta = Helpers.MakeMatrix(numInput,
+		// numHidden);
+		// inputToHiddenPreviousBiasesDelta = new double[numHidden];
+		// hiddenToOutputPreviousWeightsDelta = Helpers.MakeMatrix(numHidden,
+		// numOutput);
+		// hiddenToOutputPreviousBiasesDelta = new double[numOutput];
 	}
 
 	public void updateWeights(double[] targetValues, double learningRate,
