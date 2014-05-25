@@ -7,12 +7,25 @@ import java.util.List;
 import edu.fmi.nn.backpropagation.Layer.Type;
 
 public class NeuralNetwork {
+
+	/**
+	 * {@value}
+	 */
 	private static final double MOMENTUM = 0.04;
 
+	/**
+	 * {@value}
+	 */
 	private static final double LEARNING_RATE = 0.90;
 
+	/**
+	 * {@value}
+	 */
 	private static final double MAX_ERROR_TOLERANCE = 0.01;
 
+	/**
+	 * {@value}
+	 */
 	private static final int MAX_NUM_EPOCHS = 1000;
 
 	private final Layer inputLayer;
