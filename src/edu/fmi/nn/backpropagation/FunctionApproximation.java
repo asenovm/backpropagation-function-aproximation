@@ -1,5 +1,7 @@
 package edu.fmi.nn.backpropagation;
 
+import java.util.Arrays;
+
 import edu.fmi.nn.backpropagation.model.FunctionModel;
 import edu.fmi.nn.backpropagation.view.FunctionView;
 
@@ -35,6 +37,7 @@ public class FunctionApproximation {
 			network.updateWeights(targetValues, learningRate, momentum);
 			yValues = network.computeOutputs(inputValues);
 			error = error(targetValues, yValues);
+			System.out.println(Arrays.toString(yValues));
 			++epochsCount;
 		}
 	}

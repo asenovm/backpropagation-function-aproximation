@@ -10,6 +10,10 @@ public class NeuralNetwork {
 
 	private final Layer outputLayer;
 
+	private final ActivationFunction hiddenLayerActivationFunction;
+
+	private final ActivationFunction outputLayerActivationFunction;
+
 	public NeuralNetwork(int numInput, int numHidden, int numOutput) {
 
 		final List<Node> inputNodes = new LinkedList<Node>();
@@ -54,6 +58,9 @@ public class NeuralNetwork {
 		inputLayer = new Layer(inputNodes);
 		hiddenLayer = new Layer(hiddenNodes);
 		outputLayer = new Layer(outputNodes);
+
+		hiddenLayerActivationFunction = new SigmoidFunction();
+		outputLayerActivationFunction = new HyperbolicTanFunction();
 	}
 
 	public void updateWeights(double[] targetValues, double learningRate,
@@ -64,7 +71,12 @@ public class NeuralNetwork {
 		final List<Node> hiddenNodes = hiddenLayer.getNodes();
 
 		updateGradients(targetValues, outputNodes, hiddenNodes);
+		updateWeights(learningRate, momentum, inputNodes, hiddenNodes);
+		updateBiases(learningRate, momentum, outputNodes, hiddenNodes);
+	}
 
+	private void updateWeights(double learningRate, double momentum,
+			final List<Node> inputNodes, final List<Node> hiddenNodes) {
 		for (int i = 0; i < inputNodes.size(); ++i) {
 			final Node node = inputNodes.get(i);
 			final List<Edge> edges = node.getEdges();
@@ -88,8 +100,6 @@ public class NeuralNetwork {
 				edge.addWeight(delta);
 			}
 		}
-
-		updateBiases(learningRate, momentum, outputNodes, hiddenNodes);
 	}
 
 	private void updateGradients(double[] targetValues,
@@ -171,7 +181,7 @@ public class NeuralNetwork {
 		for (int i = 0; i < hiddenNodes.size(); ++i) {
 			final Node node = hiddenNodes.get(i);
 			node.addValue(node.getBias());
-			node.setValue(sigmoidFunction(node.getValue()));
+			node.setValue(hiddenLayerActivationFunction.apply(node.getValue()));
 		}
 
 		for (int i = 0; i < hiddenNodes.size(); ++i) {
@@ -187,7 +197,7 @@ public class NeuralNetwork {
 		for (int i = 0; i < outputNodes.size(); ++i) {
 			final Node node = outputNodes.get(i);
 			node.addValue(node.getBias());
-			node.setValue(hyperTanFunction(node.getValue()));
+			node.setValue(outputLayerActivationFunction.apply(node.getValue()));
 		}
 
 		final double[] result = new double[outputNodes.size()];
@@ -198,21 +208,4 @@ public class NeuralNetwork {
 		return result;
 	}
 
-	private static double sigmoidFunction(double x) {
-		if (x < -45.0)
-			return 0.0;
-		else if (x > 45.0)
-			return 1.0;
-		else
-			return 1.0 / (1.0 + Math.exp(-x));
-	}
-
-	private static double hyperTanFunction(double x) {
-		if (x < -10.0)
-			return -1.0;
-		else if (x > 10.0)
-			return 1.0;
-		else
-			return Math.tanh(x);
-	}
 }
