@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.fmi.nn.backpropagation.Layer.Type;
+
 public class NeuralNetwork {
 	private static final double MOMENTUM = 0.04;
 
@@ -64,9 +66,9 @@ public class NeuralNetwork {
 			}
 		}
 
-		inputLayer = new Layer(inputNodes);
-		hiddenLayer = new Layer(hiddenNodes);
-		outputLayer = new Layer(outputNodes);
+		inputLayer = Layer.from(inputNodes, Type.INPUT);
+		hiddenLayer = Layer.from(hiddenNodes, Type.HIDDEN);
+		outputLayer = Layer.from(outputNodes, Type.OUTPUT);
 
 		hiddenLayerActivationFunction = new SigmoidFunction();
 		outputLayerActivationFunction = new HyperbolicTanFunction();
@@ -193,7 +195,7 @@ public class NeuralNetwork {
 			final Node node = inputNodes.get(i);
 			node.addValue(inputValues[i]);
 		}
-		
+
 		computeOutput(inputNodes, hiddenNodes, hiddenLayerActivationFunction);
 		computeOutput(hiddenNodes, outputNodes, outputLayerActivationFunction);
 

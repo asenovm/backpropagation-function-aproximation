@@ -79,5 +79,5 @@ public class Node {
 	public void addMomentum(final double momentum) {
 		this.bias += momentum * previousBiasDelta;
 	}
-
+	
 }

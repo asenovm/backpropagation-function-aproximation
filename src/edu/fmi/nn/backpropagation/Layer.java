@@ -8,8 +8,23 @@ public class Layer {
 
 	private final List<Node> nodes;
 
-	public Layer(final List<Node> nodes) {
+	private final ActivationFunction function;
+
+	public static enum Type {
+		INPUT, HIDDEN, OUTPUT;
+	}
+
+	public static Layer from(final List<Node> nodes, final Type type) {
+		if (type == Type.HIDDEN) {
+			return new Layer(nodes, new SigmoidFunction());
+		} else {
+			return new Layer(nodes, new HyperbolicTanFunction());
+		}
+	}
+
+	private Layer(final List<Node> nodes, final ActivationFunction function) {
 		this.nodes = new LinkedList<Node>(nodes);
+		this.function = function;
 	}
 
 	public List<Node> getNodes() {
