@@ -37,6 +37,10 @@ public class Layer {
 		}
 	}
 
+	public double applyActivation(final double value) {
+		return function.apply(value);
+	}
+
 	@Override
 	public String toString() {
 		return getNodes().toString();
