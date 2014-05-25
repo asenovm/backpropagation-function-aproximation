@@ -1,5 +1,7 @@
 package edu.fmi.nn.backpropagation.view;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.HeadlessException;
 
@@ -10,16 +12,33 @@ import edu.fmi.nn.backpropagation.model.FunctionModel;
 
 public class FunctionView extends JFrame implements ModelListener {
 
+	/**
+	 * {@value}
+	 */
+	private static final int HEIGHT_FRAME = 800;
+
+	/**
+	 * {@value}
+	 */
+	private static final int WIDTH_FRAME = 800;
+
 	private FunctionPanel functionPanel;
 
 	public FunctionView(String title, GraphicsConfiguration gc) {
 		super(title, gc);
+		setLayout(new BorderLayout());
 
-		functionPanel = new FunctionPanel();
-		add(functionPanel);
+		final Dimension dimension = new Dimension(WIDTH_FRAME, HEIGHT_FRAME);
+		setMinimumSize(dimension);
+		setMaximumSize(dimension);
+		setPreferredSize(dimension);
 
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		functionPanel = new FunctionPanel();
+		add(functionPanel, BorderLayout.PAGE_START);
+		add(new MenuPanel(), BorderLayout.PAGE_END);
 
 		pack();
 		setVisible(true);
