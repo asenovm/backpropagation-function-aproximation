@@ -193,38 +193,9 @@ public class NeuralNetwork {
 			final Node node = inputNodes.get(i);
 			node.addValue(inputValues[i]);
 		}
-
-		for (int i = 0; i < inputNodes.size(); ++i) {
-			final Node node = inputNodes.get(i);
-			final List<Edge> nodeEdges = node.getEdges();
-
-			for (final Edge edge : nodeEdges) {
-				final Node end = edge.getEnd();
-				end.addValue(node.getValue() * edge.getWeight());
-			}
-		}
-
-		for (int i = 0; i < hiddenNodes.size(); ++i) {
-			final Node node = hiddenNodes.get(i);
-			node.addValue(node.getBias());
-			node.setValue(hiddenLayerActivationFunction.apply(node.getValue()));
-		}
-
-		for (int i = 0; i < hiddenNodes.size(); ++i) {
-			final Node node = hiddenNodes.get(i);
-			final List<Edge> nodeEdges = node.getEdges();
-
-			for (final Edge edge : nodeEdges) {
-				final Node end = edge.getEnd();
-				end.addValue(node.getValue() * edge.getWeight());
-			}
-		}
-
-		for (int i = 0; i < outputNodes.size(); ++i) {
-			final Node node = outputNodes.get(i);
-			node.addValue(node.getBias());
-			node.setValue(outputLayerActivationFunction.apply(node.getValue()));
-		}
+		
+		computeOutput(inputNodes, hiddenNodes, hiddenLayerActivationFunction);
+		computeOutput(hiddenNodes, outputNodes, outputLayerActivationFunction);
 
 		final double[] result = new double[outputNodes.size()];
 		for (int i = 0; i < outputNodes.size(); ++i) {
@@ -232,6 +203,25 @@ public class NeuralNetwork {
 		}
 
 		return result;
+	}
+
+	private void computeOutput(final List<Node> prevLayerNodes,
+			final List<Node> nextLayerNodes, final ActivationFunction function) {
+		for (int i = 0; i < prevLayerNodes.size(); ++i) {
+			final Node node = prevLayerNodes.get(i);
+			final List<Edge> nodeEdges = node.getEdges();
+
+			for (final Edge edge : nodeEdges) {
+				final Node end = edge.getEnd();
+				end.addValue(node.getValue() * edge.getWeight());
+			}
+		}
+
+		for (int i = 0; i < nextLayerNodes.size(); ++i) {
+			final Node node = nextLayerNodes.get(i);
+			node.addValue(node.getBias());
+			node.setValue(function.apply(node.getValue()));
+		}
 	}
 
 }
