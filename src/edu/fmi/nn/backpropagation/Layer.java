@@ -21,4 +21,10 @@ public class Layer {
 		return getNodes().toString();
 	}
 
+	public void reset() {
+		for (final Node node : nodes) {
+			node.setValue(0.0);
+		}
+	}
+
 }

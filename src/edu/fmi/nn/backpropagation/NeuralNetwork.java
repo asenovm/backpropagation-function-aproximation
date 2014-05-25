@@ -185,20 +185,9 @@ public class NeuralNetwork {
 		final List<Node> hiddenNodes = hiddenLayer.getNodes();
 		final List<Node> outputNodes = outputLayer.getNodes();
 
-		for (int i = 0; i < inputNodes.size(); ++i) {
-			final Node node = inputNodes.get(i);
-			node.setValue(0.0);
-		}
-
-		for (int i = 0; i < hiddenNodes.size(); ++i) {
-			final Node node = hiddenNodes.get(i);
-			node.setValue(0.0);
-		}
-
-		for (int i = 0; i < outputNodes.size(); ++i) {
-			final Node node = outputNodes.get(i);
-			node.setValue(0.0);
-		}
+		inputLayer.reset();
+		hiddenLayer.reset();
+		outputLayer.reset();
 
 		for (int i = 0; i < inputValues.length; ++i) {
 			final Node node = inputNodes.get(i);
