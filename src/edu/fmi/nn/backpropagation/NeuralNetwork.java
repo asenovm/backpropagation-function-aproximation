@@ -105,31 +105,22 @@ public class NeuralNetwork {
 
 	private void updateWeights(double[] targetValues) {
 
-		final List<Node> inputNodes = inputLayer.getNodes();
 		final List<Node> outputNodes = outputLayer.getNodes();
 		final List<Node> hiddenNodes = hiddenLayer.getNodes();
 
 		updateGradients(targetValues, outputNodes, hiddenNodes);
-		updateWeights(inputNodes, hiddenNodes);
-		updateBiases(outputNodes, hiddenNodes);
+		
+		updateWeights(inputLayer);
+		updateWeights(hiddenLayer);
+		
+		updateBiases(hiddenNodes);
+		updateBiases(outputNodes);
 	}
-
-	private void updateWeights(final List<Node> inputNodes,
-			final List<Node> hiddenNodes) {
-		for (int i = 0; i < inputNodes.size(); ++i) {
-			final Node node = inputNodes.get(i);
-			final List<Edge> edges = node.getEdges();
-			for (final Edge edge : edges) {
-				final Node end = edge.getEnd();
-				double delta = LEARNING_RATE * end.getGradient()
-						* node.getValue();
-				edge.addMomentum(MOMENTUM);
-				edge.addWeight(delta);
-			}
-		}
-
-		for (int i = 0; i < hiddenNodes.size(); ++i) {
-			final Node node = hiddenNodes.get(i);
+	
+	private void updateWeights(final Layer layer) {
+		final List<Node> nodes = layer.getNodes();
+		for (int i = 0; i < nodes.size(); ++i) {
+			final Node node = nodes.get(i);
 			final List<Edge> edges = node.getEdges();
 			for (final Edge edge : edges) {
 				final Node end = edge.getEnd();
@@ -165,17 +156,9 @@ public class NeuralNetwork {
 		}
 	}
 
-	private void updateBiases(final List<Node> outputNodes,
-			final List<Node> hiddenNodes) {
-		for (int i = 0; i < hiddenNodes.size(); ++i) {
-			final Node node = hiddenNodes.get(i);
-			double delta = LEARNING_RATE * node.getGradient();
-			node.addMomentum(MOMENTUM);
-			node.addBias(delta);
-		}
-
-		for (int i = 0; i < outputNodes.size(); ++i) {
-			final Node node = outputNodes.get(i);
+	private void updateBiases(final List<Node> nodes){
+		for (int i = 0; i < nodes.size(); ++i) {
+			final Node node = nodes.get(i);
 			double delta = LEARNING_RATE * node.getGradient();
 			node.addMomentum(MOMENTUM);
 			node.addBias(delta);
