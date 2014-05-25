@@ -5,6 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class NeuralNetwork {
+	private static final double MOMENTUM = 0.04;
+
+	private static final double LEARNING_RATE = 0.90;
+
 	private static final double MAX_ERROR_TOLERANCE = 0.01;
 
 	private static final int MAX_NUM_EPOCHS = 1000;
@@ -72,14 +76,11 @@ public class NeuralNetwork {
 		double[] inputValues = new double[] { 1.0, 2.0, 3.0 };
 		double[] targetValues = new double[] { -0.8500, 0.7500 };
 
-		double learningRate = 0.90;
-		double momentum = 0.04;
-
 		int epochsCount = 0;
 		double[] yValues = computeOutputs(inputValues);
 
 		while (isTraining(targetValues, epochsCount, yValues)) {
-			updateWeights(targetValues, learningRate, momentum);
+			updateWeights(targetValues);
 			yValues = computeOutputs(inputValues);
 			System.out.println(Arrays.toString(yValues));
 			++epochsCount;
@@ -100,28 +101,27 @@ public class NeuralNetwork {
 		return sum;
 	}
 
-	private void updateWeights(double[] targetValues, double learningRate,
-			double momentum) {
+	private void updateWeights(double[] targetValues) {
 
 		final List<Node> inputNodes = inputLayer.getNodes();
 		final List<Node> outputNodes = outputLayer.getNodes();
 		final List<Node> hiddenNodes = hiddenLayer.getNodes();
 
 		updateGradients(targetValues, outputNodes, hiddenNodes);
-		updateWeights(learningRate, momentum, inputNodes, hiddenNodes);
-		updateBiases(learningRate, momentum, outputNodes, hiddenNodes);
+		updateWeights(inputNodes, hiddenNodes);
+		updateBiases(outputNodes, hiddenNodes);
 	}
 
-	private void updateWeights(double learningRate, double momentum,
-			final List<Node> inputNodes, final List<Node> hiddenNodes) {
+	private void updateWeights(final List<Node> inputNodes,
+			final List<Node> hiddenNodes) {
 		for (int i = 0; i < inputNodes.size(); ++i) {
 			final Node node = inputNodes.get(i);
 			final List<Edge> edges = node.getEdges();
 			for (final Edge edge : edges) {
 				final Node end = edge.getEnd();
-				double delta = learningRate * end.getGradient()
+				double delta = LEARNING_RATE * end.getGradient()
 						* node.getValue();
-				edge.addMomentum(momentum);
+				edge.addMomentum(MOMENTUM);
 				edge.addWeight(delta);
 			}
 		}
@@ -131,9 +131,9 @@ public class NeuralNetwork {
 			final List<Edge> edges = node.getEdges();
 			for (final Edge edge : edges) {
 				final Node end = edge.getEnd();
-				double delta = learningRate * end.getGradient()
+				double delta = LEARNING_RATE * end.getGradient()
 						* node.getValue();
-				edge.addMomentum(momentum);
+				edge.addMomentum(MOMENTUM);
 				edge.addWeight(delta);
 			}
 		}
@@ -163,19 +163,19 @@ public class NeuralNetwork {
 		}
 	}
 
-	private void updateBiases(double learningRate, double momentum,
-			final List<Node> outputNodes, final List<Node> hiddenNodes) {
+	private void updateBiases(final List<Node> outputNodes,
+			final List<Node> hiddenNodes) {
 		for (int i = 0; i < hiddenNodes.size(); ++i) {
 			final Node node = hiddenNodes.get(i);
-			double delta = learningRate * node.getGradient();
-			node.addMomentum(momentum);
+			double delta = LEARNING_RATE * node.getGradient();
+			node.addMomentum(MOMENTUM);
 			node.addBias(delta);
 		}
 
 		for (int i = 0; i < outputNodes.size(); ++i) {
 			final Node node = outputNodes.get(i);
-			double delta = learningRate * node.getGradient();
-			node.addMomentum(momentum);
+			double delta = LEARNING_RATE * node.getGradient();
+			node.addMomentum(MOMENTUM);
 			node.addBias(delta);
 		}
 	}
