@@ -1,6 +1,6 @@
 package edu.fmi.nn.backpropagation;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,6 +31,12 @@ public class NeuralNetwork {
 	private double[][] hiddenToOutputPreviousWeightsDelta;
 	private double[] hiddenToOutputPreviousBiasesDelta;
 
+	private final Layer inputLayer;
+
+	private final Layer hiddenLayer;
+
+	private final Layer outputLayer;
+
 	public NeuralNetwork(int numInput, int numHidden, int numOutput) {
 
 		final List<Node> inputNodes = new LinkedList<Node>();
@@ -39,18 +45,42 @@ public class NeuralNetwork {
 		}
 
 		final List<Node> hiddenNodes = new LinkedList<Node>();
+		final double[] hiddenBiases = new double[] { 1.7, 1.8, 1.9, 2.0 };
 		for (int i = 0; i < numHidden; ++i) {
-			hiddenNodes.add(new Node());
+			hiddenNodes.add(new Node(hiddenBiases[i]));
 		}
 
 		final List<Node> outputNodes = new LinkedList<Node>();
+		final double[] outputBiases = new double[] { -2.5, -5.0 };
 		for (int i = 0; i < numOutput; ++i) {
-			outputNodes.add(new Node());
+			outputNodes.add(new Node(outputBiases[i]));
 		}
 
-		final Layer inputLayer = new Layer(inputNodes, Type.INPUT);
-		final Layer hiddenLayer = new Layer(hiddenNodes, Type.HIDDEN);
-		final Layer outputLayer = new Layer(outputNodes, Type.OUTPUT);
+		final double[] inputHiddenWeights = new double[] { 0.1, 0.2, 0.3, 0.4,
+				0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2 };
+		for (int i = 0; i < inputNodes.size(); ++i) {
+			final Node inputNode = inputNodes.get(i);
+			for (int j = 0; j < hiddenNodes.size(); ++j) {
+				final Node hiddenNode = hiddenNodes.get(j);
+				inputNode.addEdge(new Edge(inputNode, hiddenNode,
+						inputHiddenWeights[i * hiddenNodes.size() + j]));
+			}
+		}
+
+		final double[] hiddenOutputWeights = new double[] { -2, -6, -1, -7,
+				1.3, 1.4, 1.5, 1.6 };
+		for (int i = 0; i < hiddenNodes.size(); ++i) {
+			final Node hiddenNode = hiddenNodes.get(i);
+			for (int j = 0; j < outputNodes.size(); ++j) {
+				final Node outputNode = outputNodes.get(j);
+				hiddenNode.addEdge(new Edge(hiddenNode, outputNode,
+						hiddenOutputWeights[i * outputNodes.size() + j]));
+			}
+		}
+
+		inputLayer = new Layer(inputNodes, Type.INPUT);
+		hiddenLayer = new Layer(hiddenNodes, Type.HIDDEN);
+		outputLayer = new Layer(outputNodes, Type.OUTPUT);
 
 		// this.inputNodesCount = numInput;
 		// this.hiddenNodesCount = numHidden;
@@ -134,37 +164,6 @@ public class NeuralNetwork {
 		}
 	}
 
-	public void setWeights(double[] weights) {
-		int numWeights = (inputNodesCount * hiddenNodesCount)
-				+ (hiddenNodesCount * outputNodesCount) + hiddenNodesCount
-				+ outputNodesCount;
-
-		if (weights.length != numWeights) {
-			return;
-		}
-
-		int k = 0;
-		for (int i = 0; i < inputNodesCount; ++i) {
-			for (int j = 0; j < hiddenNodesCount; ++j) {
-				inputToHiddenWeights[i][j] = weights[k++];
-			}
-		}
-
-		for (int i = 0; i < hiddenNodesCount; ++i) {
-			inputToHiddenBiases[i] = weights[k++];
-		}
-
-		for (int i = 0; i < hiddenNodesCount; ++i) {
-			for (int j = 0; j < outputNodesCount; ++j) {
-				hiddenToOutputWeights[i][j] = weights[k++];
-			}
-		}
-
-		for (int i = 0; i < outputNodesCount; ++i) {
-			hiddenToOutputBiases[i] = weights[k++];
-		}
-	}
-
 	public double[] getWeights() {
 		int numWeights = (inputNodesCount * hiddenNodesCount)
 				+ (hiddenNodesCount * outputNodesCount) + hiddenNodesCount
@@ -197,48 +196,68 @@ public class NeuralNetwork {
 	}
 
 	public double[] computeOutputs(double[] inputValues) {
-		if (inputValues.length != inputNodesCount) {
-			return new double[0];
+		// TODO maybe hardcode exactly 3 layers instead of using list and doing
+		// this (?)
+
+		final List<Node> inputNodes = inputLayer.getNodes();
+		for (int i = 0; i < inputValues.length; ++i) {
+			final Node node = inputNodes.get(i);
+			node.addValue(inputValues[i]);
 		}
 
-		Arrays.fill(inputToHiddenSums, 0.0);
-		Arrays.fill(hiddenToOutputSums, 0.0);
-		inputs = Arrays.copyOf(inputValues, inputValues.length);
+		// TODO add bias to the equation
+		for (int i = 0; i < inputNodes.size(); ++i) {
+			final Node node = inputNodes.get(i);
+			final List<Edge> nodeEdges = node.getEdges();
 
-		for (int j = 0; j < hiddenNodesCount; ++j) {
-			for (int i = 0; i < inputNodesCount; ++i) {
-				inputToHiddenSums[j] += this.inputs[i]
-						* inputToHiddenWeights[i][j];
+			for (final Edge edge : nodeEdges) {
+				final Node end = edge.getEnd();
+				end.addValue(node.getValue() * edge.getWeight());
 			}
 		}
 
-		for (int i = 0; i < hiddenNodesCount; ++i) {
-			inputToHiddenSums[i] += inputToHiddenBiases[i];
+		final List<Node> hiddenNodes = hiddenLayer.getNodes();
+		for (int i = 0; i < hiddenNodes.size(); ++i) {
+			final Node node = hiddenNodes.get(i);
+			System.out.println("before bias " + node.getValue());
+			System.out.println("bias is " + node.getBias());
+			node.addValue(node.getBias());
+			System.out.println("after bias " + node.getValue());
+			node.setValue(sigmoidFunction(node.getValue()));
 		}
 
-		for (int i = 0; i < hiddenNodesCount; ++i) {
-			inputToHiddenOutputs[i] = sigmoidFunction(inputToHiddenSums[i]);
-		}
+		// for (int i = 0; i < hiddenNodes.size(); ++i) {
+		// final Node node = hiddenNodes.get(i);
+		// final List<Edge> nodeEdges = node.getEdges();
+		//
+		// for (final Edge edge : nodeEdges) {
+		// final Node end = edge.getEnd();
+		// end.addValue(node.getValue() * edge.getWeight());
+		// }
+		// }
+		//
+		// final List<Node> outputNodes = outputLayer.getNodes();
+		// for (int i = 0; i < outputNodes.size(); ++i) {
+		// final Node node = outputNodes.get(i);
+		// node.addValue(node.getBias());
+		// node.setValue(hyperTanFunction(node.getValue()));
+		// }
+		//
+		// System.out
+		// .println("****************************START********************");
+		// System.out
+		// .println("***************************INPUT*********************");
+		// System.out.println(inputLayer);
+		// System.out
+		// .println("***************************HIDDEN*********************");
+		// System.out.println(hiddenLayer);
+		// System.out
+		// .println("***************************OUTPUT*********************");
+		// System.out.println(outputLayer);
+		// System.out
+		// .println("*************************END**************************");
 
-		for (int j = 0; j < outputNodesCount; ++j) {
-			for (int i = 0; i < hiddenNodesCount; ++i) {
-				hiddenToOutputSums[j] += inputToHiddenOutputs[i]
-						* hiddenToOutputWeights[i][j];
-			}
-		}
-
-		for (int i = 0; i < outputNodesCount; ++i) {
-			hiddenToOutputSums[i] += hiddenToOutputBiases[i];
-		}
-
-		for (int i = 0; i < outputNodesCount; ++i) {
-			this.outputs[i] = hyperTanFunction(hiddenToOutputSums[i]);
-		}
-
-		double[] result = new double[outputNodesCount];
-		result = Arrays.copyOf(outputs, outputs.length);
-
-		return result;
+		return null;
 	}
 
 	private static double sigmoidFunction(double x) {

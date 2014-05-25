@@ -1,17 +1,38 @@
 package edu.fmi.nn.backpropagation;
 
+import java.util.Random;
+
 public class Edge {
 
 	private double weight;
-
-	private double bias;
 
 	private final Node start;
 
 	private final Node end;
 
+	public Edge(final Node start, final Node end, final double weight) {
+		this(start, end);
+		this.weight = weight;
+	}
+
 	public Edge(final Node start, final Node end) {
 		this.start = start;
 		this.end = end;
+
+		final Random random = new Random();
+		weight = random.nextDouble();
 	}
+
+	public Node getStart() {
+		return start;
+	}
+
+	public Node getEnd() {
+		return end;
+	}
+
+	public double getWeight() {
+		return weight;
+	}
+
 }

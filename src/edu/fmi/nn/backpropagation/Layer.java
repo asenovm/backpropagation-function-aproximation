@@ -1,5 +1,7 @@
 package edu.fmi.nn.backpropagation;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,4 +19,14 @@ public class Layer {
 		this.type = type;
 		this.nodes = new LinkedList<Node>(nodes);
 	}
+
+	public List<Node> getNodes() {
+		return Collections.unmodifiableList(nodes);
+	}
+	
+	@Override
+	public String toString() {
+		return getNodes().toString();
+	}
+
 }
