@@ -9,7 +9,6 @@ import java.awt.Point;
 import javax.swing.JFrame;
 
 import edu.fmi.nn.backpropagation.ModelListener;
-import edu.fmi.nn.backpropagation.PointsListener;
 import edu.fmi.nn.backpropagation.model.FunctionModel;
 
 public class FunctionView extends JFrame implements ModelListener {
@@ -46,15 +45,6 @@ public class FunctionView extends JFrame implements ModelListener {
 	 * {@value}
 	 */
 	private static final long serialVersionUID = -4178865610705123099L;
-
-	public static class SimplePointsListener implements PointsListener {
-
-		@Override
-		public void onPointAdded(int x, int y) {
-			// blank
-		}
-
-	}
 
 	public FunctionView() throws HeadlessException {
 		this("", null);
