@@ -1,12 +1,16 @@
 package edu.fmi.nn.backpropagation;
 
+import java.awt.Point;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import edu.fmi.nn.backpropagation.Layer.Type;
 
 public class NeuralNetwork {
+
+	private static final int NUMBER_HIDDEN_NODES = 4;
 
 	/**
 	 * {@value}
@@ -34,44 +38,39 @@ public class NeuralNetwork {
 
 	private final Layer outputLayer;
 
-	public NeuralNetwork(int numInput, int numHidden, int numOutput) {
-
+	public NeuralNetwork(final List<Point> points) {
 		final List<Node> inputNodes = new LinkedList<Node>();
-		for (int i = 0; i < numInput; ++i) {
+		for (int i = 0; i < points.size(); ++i) {
 			inputNodes.add(new Node());
 		}
 
+		final Random random = new Random();
+
 		final List<Node> hiddenNodes = new LinkedList<Node>();
-		final double[] hiddenBiases = new double[] { -2.0, -6.0, -1, -7 };
-		for (int i = 0; i < numHidden; ++i) {
-			hiddenNodes.add(new Node(hiddenBiases[i]));
+		for (int i = 0; i < NUMBER_HIDDEN_NODES; ++i) {
+			hiddenNodes.add(new Node(random.nextDouble()));
 		}
 
 		final List<Node> outputNodes = new LinkedList<Node>();
-		final double[] outputBiases = new double[] { -2.5, -5.0 };
-		for (int i = 0; i < numOutput; ++i) {
-			outputNodes.add(new Node(outputBiases[i]));
+		for (int i = 0; i < points.size(); ++i) {
+			outputNodes.add(new Node(random.nextDouble()));
 		}
 
-		final double[] inputHiddenWeights = new double[] { 0.1, 0.2, 0.3, 0.4,
-				0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2 };
 		for (int i = 0; i < inputNodes.size(); ++i) {
 			final Node inputNode = inputNodes.get(i);
 			for (int j = 0; j < hiddenNodes.size(); ++j) {
 				final Node hiddenNode = hiddenNodes.get(j);
-				inputNode.addEdge(new Edge(inputNode, hiddenNode,
-						inputHiddenWeights[i * hiddenNodes.size() + j]));
+				inputNode.addEdge(new Edge(inputNode, hiddenNode, random
+						.nextDouble()));
 			}
 		}
 
-		final double[] hiddenOutputWeights = new double[] { 1.3, 1.4, 1.5, 1.6,
-				1.7, 1.8, 1.9, 2.0 };
 		for (int i = 0; i < hiddenNodes.size(); ++i) {
 			final Node hiddenNode = hiddenNodes.get(i);
 			for (int j = 0; j < outputNodes.size(); ++j) {
 				final Node outputNode = outputNodes.get(j);
-				hiddenNode.addEdge(new Edge(hiddenNode, outputNode,
-						hiddenOutputWeights[i * outputNodes.size() + j]));
+				hiddenNode.addEdge(new Edge(hiddenNode, outputNode, random
+						.nextDouble()));
 			}
 		}
 
@@ -80,9 +79,14 @@ public class NeuralNetwork {
 		outputLayer = Layer.from(outputNodes, Type.OUTPUT);
 	}
 
-	public void train() {
-		double[] inputValues = new double[] { 1.0, 2.0, 3.0 };
-		double[] targetValues = new double[] { -0.8500, 0.7500 };
+	public void train(final List<Point> points) {
+		double[] inputValues = new double[points.size()];
+		double[] targetValues = new double[points.size()];
+
+		for (int i = 0; i < points.size(); ++i) {
+			inputValues[i] = points.get(i).getX();
+			targetValues[i] = points.get(i).getY();
+		}
 
 		int epochsCount = 0;
 		double[] yValues = computeOutputs(inputValues);
@@ -90,7 +94,9 @@ public class NeuralNetwork {
 		while (isTraining(targetValues, epochsCount, yValues)) {
 			updateWeights(targetValues);
 			yValues = computeOutputs(inputValues);
-			System.out.println(Arrays.toString(yValues));
+			System.out.println("target values are "
+					+ Arrays.toString(targetValues));
+			System.out.println("real values are " + Arrays.toString(yValues));
 			++epochsCount;
 		}
 	}

@@ -1,5 +1,8 @@
 package edu.fmi.nn.backpropagation;
 
+import java.awt.Point;
+import java.util.List;
+
 import javax.swing.SwingUtilities;
 
 import edu.fmi.nn.backpropagation.model.FunctionModel;
@@ -34,13 +37,13 @@ public class FunctionApproximation implements ViewCallback {
 				final FunctionApproximation approximation = new FunctionApproximation();
 			}
 		});
-		NeuralNetwork network = new NeuralNetwork(3, 4, 2);
-		network.train();
 	}
 
 	@Override
 	public void onTrainClicked() {
-		System.out.println("train clicked!");
+		final List<Point> points = model.getPoints();
+		final NeuralNetwork network = new NeuralNetwork(points);
+		network.train(points);
 	}
 
 	@Override
