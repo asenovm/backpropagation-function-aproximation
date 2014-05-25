@@ -1,9 +1,14 @@
 package edu.fmi.nn.backpropagation;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 public class NeuralNetwork {
+	private static final double MAX_ERROR_TOLERANCE = 0.01;
+
+	private static final int MAX_NUM_EPOCHS = 1000;
+
 	private final Layer inputLayer;
 
 	private final Layer hiddenLayer;
@@ -63,7 +68,39 @@ public class NeuralNetwork {
 		outputLayerActivationFunction = new HyperbolicTanFunction();
 	}
 
-	public void updateWeights(double[] targetValues, double learningRate,
+	public void train() {
+		double[] inputValues = new double[] { 1.0, 2.0, 3.0 };
+		double[] targetValues = new double[] { -0.8500, 0.7500 };
+
+		double learningRate = 0.90;
+		double momentum = 0.04;
+
+		int epochsCount = 0;
+		double[] yValues = computeOutputs(inputValues);
+
+		while (isTraining(targetValues, epochsCount, yValues)) {
+			updateWeights(targetValues, learningRate, momentum);
+			yValues = computeOutputs(inputValues);
+			System.out.println(Arrays.toString(yValues));
+			++epochsCount;
+		}
+	}
+
+	private boolean isTraining(double[] targetValues, int epochsCount,
+			double[] yValues) {
+		final double error = getError(targetValues, yValues);
+		return epochsCount < MAX_NUM_EPOCHS && error > MAX_ERROR_TOLERANCE;
+	}
+
+	private double getError(double[] target, double[] output) {
+		double sum = 0.0;
+		for (int i = 0; i < target.length; ++i) {
+			sum += Math.abs(target[i] - output[i]);
+		}
+		return sum;
+	}
+
+	private void updateWeights(double[] targetValues, double learningRate,
 			double momentum) {
 
 		final List<Node> inputNodes = inputLayer.getNodes();
@@ -143,7 +180,7 @@ public class NeuralNetwork {
 		}
 	}
 
-	public double[] computeOutputs(double[] inputValues) {
+	private double[] computeOutputs(double[] inputValues) {
 		final List<Node> inputNodes = inputLayer.getNodes();
 		final List<Node> hiddenNodes = hiddenLayer.getNodes();
 		final List<Node> outputNodes = outputLayer.getNodes();
