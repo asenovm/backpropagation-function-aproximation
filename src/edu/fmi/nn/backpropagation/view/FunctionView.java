@@ -10,7 +10,7 @@ import javax.swing.JFrame;
 import edu.fmi.nn.backpropagation.ModelListener;
 import edu.fmi.nn.backpropagation.model.FunctionModel;
 
-public class FunctionView extends JFrame implements ModelListener {
+public class FunctionView extends JFrame implements ModelListener, ViewCallback {
 
 	/**
 	 * {@value}
@@ -23,6 +23,8 @@ public class FunctionView extends JFrame implements ModelListener {
 	private static final int WIDTH_FRAME = 800;
 
 	private FunctionPanel functionPanel;
+
+	private ViewCallback callback;
 
 	public FunctionView(String title, GraphicsConfiguration gc) {
 		super(title, gc);
@@ -38,7 +40,10 @@ public class FunctionView extends JFrame implements ModelListener {
 
 		functionPanel = new FunctionPanel();
 		add(functionPanel, BorderLayout.PAGE_START);
-		add(new MenuPanel(), BorderLayout.PAGE_END);
+
+		final MenuPanel panel = new MenuPanel();
+		panel.setCallback(this);
+		add(panel, BorderLayout.PAGE_END);
 
 		pack();
 		setVisible(true);
@@ -64,6 +69,20 @@ public class FunctionView extends JFrame implements ModelListener {
 	@Override
 	public void onModelChanged(FunctionModel model) {
 		functionPanel.onModelChanged(model);
+	}
+
+	public void setCallback(final ViewCallback callback) {
+		this.callback = callback;
+	}
+
+	@Override
+	public void onTrainClicked() {
+		callback.onTrainClicked();
+	}
+
+	@Override
+	public void onResetClicked() {
+		callback.onResetClicked();
 	}
 
 }
