@@ -6,12 +6,16 @@ import java.util.List;
 
 public class Node {
 
-	double bias;
+	private double previousBiasDelta;
 
-	double value;
+	private double bias;
+
+	private double value;
+
+	private double gradient;
 
 	private final List<Edge> edges;
-	
+
 	public Node(double bias) {
 		this();
 		this.bias = bias;
@@ -39,6 +43,7 @@ public class Node {
 
 	public void setBias(final double bias) {
 		this.bias = bias;
+		previousBiasDelta = 0;
 	}
 
 	public void addEdge(final Edge edge) {
@@ -48,10 +53,31 @@ public class Node {
 	public List<Edge> getEdges() {
 		return Collections.unmodifiableList(edges);
 	}
-	
+
+	public void setGradient(final double gradient) {
+		this.gradient = gradient;
+	}
+
+	public double getGradient() {
+		return gradient;
+	}
+
 	@Override
 	public String toString() {
 		return Double.toString(value);
+	}
+
+	public void addBias(final double delta) {
+		this.bias += delta;
+		previousBiasDelta = delta;
+	}
+
+	public double getPrevBiasDelta() {
+		return previousBiasDelta;
+	}
+
+	public void addMomentum(final double momentum) {
+		this.bias += momentum * previousBiasDelta;
 	}
 
 }

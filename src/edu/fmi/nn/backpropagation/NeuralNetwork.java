@@ -3,31 +3,7 @@ package edu.fmi.nn.backpropagation;
 import java.util.LinkedList;
 import java.util.List;
 
-import edu.fmi.nn.backpropagation.Layer.Type;
-
 public class NeuralNetwork {
-	private int inputNodesCount;
-	private int hiddenNodesCount;
-	private int outputNodesCount;
-
-	private double[] inputs;
-	private double[][] inputToHiddenWeights;
-	private double[] inputToHiddenBiases;
-	private double[] inputToHiddenOutputs;
-
-	private double[][] hiddenToOutputWeights;
-	private double[] hiddenToOutputBiases;
-	private double[] outputs;
-
-	private double[] outputGradents;
-	private double[] hiddenGradients;
-
-	private double[][] inputToHiddenPreviousWeightsDelta;
-	private double[] inputToHiddenPreviousBiasesDelta;
-
-	private double[][] hiddenToOutputPreviousWeightsDelta;
-	private double[] hiddenToOutputPreviousBiasesDelta;
-
 	private final Layer inputLayer;
 
 	private final Layer hiddenLayer;
@@ -75,101 +51,108 @@ public class NeuralNetwork {
 			}
 		}
 
-		inputLayer = new Layer(inputNodes, Type.INPUT);
-		hiddenLayer = new Layer(hiddenNodes, Type.HIDDEN);
-		outputLayer = new Layer(outputNodes, Type.OUTPUT);
+		inputLayer = new Layer(inputNodes);
+		hiddenLayer = new Layer(hiddenNodes);
+		outputLayer = new Layer(outputNodes);
 	}
 
 	public void updateWeights(double[] targetValues, double learningRate,
 			double momentum) {
-		if (targetValues.length != outputNodesCount) {
-			return;
+
+		final List<Node> inputNodes = inputLayer.getNodes();
+		final List<Node> outputNodes = outputLayer.getNodes();
+		final List<Node> hiddenNodes = hiddenLayer.getNodes();
+
+		updateGradients(targetValues, outputNodes, hiddenNodes);
+
+		for (int i = 0; i < inputNodes.size(); ++i) {
+			final Node node = inputNodes.get(i);
+			final List<Edge> edges = node.getEdges();
+			for (final Edge edge : edges) {
+				final Node end = edge.getEnd();
+				double delta = learningRate * end.getGradient()
+						* node.getValue();
+				edge.addMomentum(momentum);
+				edge.addWeight(delta);
+			}
 		}
 
-		for (int i = 0; i < outputGradents.length; ++i) {
-			double derivative = (1 - outputs[i]) * (1 + outputs[i]);
-			outputGradents[i] = derivative * (targetValues[i] - outputs[i]);
+		for (int i = 0; i < hiddenNodes.size(); ++i) {
+			final Node node = hiddenNodes.get(i);
+			final List<Edge> edges = node.getEdges();
+			for (final Edge edge : edges) {
+				final Node end = edge.getEnd();
+				double delta = learningRate * end.getGradient()
+						* node.getValue();
+				edge.addMomentum(momentum);
+				edge.addWeight(delta);
+			}
 		}
 
-		for (int i = 0; i < hiddenGradients.length; ++i) {
-			double derivative = (1 - inputToHiddenOutputs[i])
-					* inputToHiddenOutputs[i];
+		updateBiases(learningRate, momentum, outputNodes, hiddenNodes);
+	}
+
+	private void updateGradients(double[] targetValues,
+			final List<Node> outputNodes, final List<Node> hiddenNodes) {
+		for (int i = 0; i < outputNodes.size(); ++i) {
+			final Node node = outputNodes.get(i);
+
+			final double derivative = (1 - node.getValue())
+					* (1 + node.getValue());
+			final double gradient = derivative
+					* (targetValues[i] - node.getValue());
+			node.setGradient(gradient);
+		}
+
+		for (int i = 0; i < hiddenNodes.size(); ++i) {
+			final Node node = hiddenNodes.get(i);
+			double derivative = (1 - node.getValue()) * node.getValue();
 			double sum = 0.0;
-			for (int j = 0; j < outputNodesCount; ++j) {
-				sum += outputGradents[j] * hiddenToOutputWeights[i][j];
+			for (final Edge edge : node.getEdges()) {
+				final Node outputNode = edge.getEnd();
+				sum += outputNode.getGradient() * edge.getWeight();
 			}
-			hiddenGradients[i] = derivative * sum;
-		}
-
-		for (int i = 0; i < inputToHiddenWeights.length; ++i) {
-			for (int j = 0; j < inputToHiddenWeights[0].length; ++j) {
-				double delta = learningRate * hiddenGradients[j] * inputs[i];
-				inputToHiddenWeights[i][j] += delta;
-				inputToHiddenWeights[i][j] += momentum
-						* inputToHiddenPreviousWeightsDelta[i][j];
-			}
-		}
-
-		for (int i = 0; i < inputToHiddenBiases.length; ++i) {
-			double delta = learningRate * hiddenGradients[i] * 1.0;
-			inputToHiddenBiases[i] += delta;
-			inputToHiddenBiases[i] += momentum
-					* inputToHiddenPreviousBiasesDelta[i];
-		}
-
-		for (int i = 0; i < hiddenToOutputWeights.length; ++i) {
-			for (int j = 0; j < hiddenToOutputWeights[0].length; ++j) {
-				double delta = learningRate * outputGradents[j]
-						* inputToHiddenOutputs[i];
-				hiddenToOutputWeights[i][j] += delta;
-				hiddenToOutputWeights[i][j] += momentum
-						* hiddenToOutputPreviousWeightsDelta[i][j];
-				hiddenToOutputPreviousWeightsDelta[i][j] = delta;
-			}
-		}
-
-		for (int i = 0; i < hiddenToOutputBiases.length; ++i) {
-			double delta = learningRate * outputGradents[i] * 1.0;
-			hiddenToOutputBiases[i] += delta;
-			hiddenToOutputBiases[i] += momentum
-					* hiddenToOutputPreviousBiasesDelta[i];
-			hiddenToOutputPreviousBiasesDelta[i] = delta;
+			node.setGradient(derivative * sum);
 		}
 	}
 
-	public double[] getWeights() {
-		int numWeights = (inputNodesCount * hiddenNodesCount)
-				+ (hiddenNodesCount * outputNodesCount) + hiddenNodesCount
-				+ outputNodesCount;
-		double[] result = new double[numWeights];
-
-		int k = 0;
-
-		for (int i = 0; i < inputToHiddenWeights.length; ++i) {
-			for (int j = 0; j < inputToHiddenWeights[0].length; ++j) {
-				result[k++] = inputToHiddenWeights[i][j];
-			}
+	private void updateBiases(double learningRate, double momentum,
+			final List<Node> outputNodes, final List<Node> hiddenNodes) {
+		for (int i = 0; i < hiddenNodes.size(); ++i) {
+			final Node node = hiddenNodes.get(i);
+			double delta = learningRate * node.getGradient();
+			node.addMomentum(momentum);
+			node.addBias(delta);
 		}
 
-		for (int i = 0; i < inputToHiddenBiases.length; ++i) {
-			result[k++] = inputToHiddenBiases[i];
+		for (int i = 0; i < outputNodes.size(); ++i) {
+			final Node node = outputNodes.get(i);
+			double delta = learningRate * node.getGradient();
+			node.addMomentum(momentum);
+			node.addBias(delta);
 		}
-
-		for (int i = 0; i < hiddenToOutputWeights.length; ++i) {
-			for (int j = 0; j < hiddenToOutputWeights[0].length; ++j) {
-				result[k++] = hiddenToOutputWeights[i][j];
-			}
-		}
-
-		for (int i = 0; i < hiddenToOutputBiases.length; ++i) {
-			result[k++] = hiddenToOutputBiases[i];
-		}
-
-		return result;
 	}
 
 	public double[] computeOutputs(double[] inputValues) {
 		final List<Node> inputNodes = inputLayer.getNodes();
+		final List<Node> hiddenNodes = hiddenLayer.getNodes();
+		final List<Node> outputNodes = outputLayer.getNodes();
+
+		for (int i = 0; i < inputNodes.size(); ++i) {
+			final Node node = inputNodes.get(i);
+			node.setValue(0.0);
+		}
+
+		for (int i = 0; i < hiddenNodes.size(); ++i) {
+			final Node node = hiddenNodes.get(i);
+			node.setValue(0.0);
+		}
+
+		for (int i = 0; i < outputNodes.size(); ++i) {
+			final Node node = outputNodes.get(i);
+			node.setValue(0.0);
+		}
+
 		for (int i = 0; i < inputValues.length; ++i) {
 			final Node node = inputNodes.get(i);
 			node.addValue(inputValues[i]);
@@ -185,7 +168,6 @@ public class NeuralNetwork {
 			}
 		}
 
-		final List<Node> hiddenNodes = hiddenLayer.getNodes();
 		for (int i = 0; i < hiddenNodes.size(); ++i) {
 			final Node node = hiddenNodes.get(i);
 			node.addValue(node.getBias());
@@ -202,14 +184,18 @@ public class NeuralNetwork {
 			}
 		}
 
-		final List<Node> outputNodes = outputLayer.getNodes();
 		for (int i = 0; i < outputNodes.size(); ++i) {
 			final Node node = outputNodes.get(i);
 			node.addValue(node.getBias());
 			node.setValue(hyperTanFunction(node.getValue()));
 		}
 
-		return null;
+		final double[] result = new double[outputNodes.size()];
+		for (int i = 0; i < outputNodes.size(); ++i) {
+			result[i] = outputNodes.get(i).getValue();
+		}
+
+		return result;
 	}
 
 	private static double sigmoidFunction(double x) {
