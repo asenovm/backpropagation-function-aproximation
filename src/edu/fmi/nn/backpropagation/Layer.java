@@ -31,15 +31,15 @@ public class Layer {
 		return Collections.unmodifiableList(nodes);
 	}
 
-	@Override
-	public String toString() {
-		return getNodes().toString();
-	}
-
 	public void reset() {
 		for (final Node node : nodes) {
 			node.setValue(0.0);
 		}
+	}
+
+	@Override
+	public String toString() {
+		return getNodes().toString();
 	}
 
 }

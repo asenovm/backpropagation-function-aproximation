@@ -41,11 +41,6 @@ public class Node {
 		return bias;
 	}
 
-	public void setBias(final double bias) {
-		this.bias = bias;
-		previousBiasDelta = 0;
-	}
-
 	public void addEdge(final Edge edge) {
 		edges.add(edge);
 	}
@@ -62,22 +57,18 @@ public class Node {
 		return gradient;
 	}
 
-	@Override
-	public String toString() {
-		return Double.toString(value);
-	}
-
 	public void addBias(final double delta) {
 		this.bias += delta;
 		previousBiasDelta = delta;
 	}
 
-	public double getPrevBiasDelta() {
-		return previousBiasDelta;
-	}
-
 	public void addMomentum(final double momentum) {
 		this.bias += momentum * previousBiasDelta;
 	}
-	
+
+	@Override
+	public String toString() {
+		return Double.toString(value);
+	}
+
 }

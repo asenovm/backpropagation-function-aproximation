@@ -8,8 +8,6 @@ public class Edge {
 
 	private double weight;
 
-	private final Node start;
-
 	private final Node end;
 
 	public Edge(final Node start, final Node end, final double weight) {
@@ -18,15 +16,10 @@ public class Edge {
 	}
 
 	public Edge(final Node start, final Node end) {
-		this.start = start;
 		this.end = end;
 
 		final Random random = new Random();
 		weight = random.nextDouble();
-	}
-
-	public Node getStart() {
-		return start;
 	}
 
 	public Node getEnd() {
