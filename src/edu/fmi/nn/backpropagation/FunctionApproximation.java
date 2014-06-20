@@ -2,6 +2,8 @@ package edu.fmi.nn.backpropagation;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.swing.SwingUtilities;
 
@@ -24,6 +26,8 @@ public class FunctionApproximation implements ViewCallback {
 
 	private final NeuralNetwork network;
 
+	private final ExecutorService executor;
+
 	public FunctionApproximation() {
 		network = new NeuralNetwork();
 
@@ -33,6 +37,8 @@ public class FunctionApproximation implements ViewCallback {
 		view.addMouseListener(model);
 		view.setCallback(this);
 		model.setListener(view);
+
+		executor = Executors.newSingleThreadExecutor();
 	}
 
 	@SuppressWarnings("unused")
@@ -46,14 +52,26 @@ public class FunctionApproximation implements ViewCallback {
 	}
 
 	@Override
-	public void onTrainClicked() {
-		final List<PointDouble> points = model.getPoints();
-		final List<PointDouble> trainPoints = new LinkedList<PointDouble>();
-		for (final PointDouble point : points) {
-			trainPoints.add(CoordinatesConverter.toNetworkCoordinates(point));
-		}
-		network.train(trainPoints);
+	public void onApproximateClicked() {
+		executor.execute(new Runnable() {
 
+			@Override
+			public void run() {
+				view.onStartTraining();
+				final List<PointDouble> points = model.getPoints();
+				final List<PointDouble> trainPoints = new LinkedList<PointDouble>();
+				for (final PointDouble point : points) {
+					trainPoints.add(CoordinatesConverter
+							.toNetworkCoordinates(point));
+				}
+				network.train(trainPoints);
+
+				view.onApproximationReady(getApproximation(model.getPoints(),
+						network));
+
+				view.onEndTraining();
+			}
+		});
 	}
 
 	private List<PointDouble> getApproximation(final List<PointDouble> points,
@@ -80,8 +98,4 @@ public class FunctionApproximation implements ViewCallback {
 		// blank as for now
 	}
 
-	@Override
-	public void onApproximateClicked() {
-		view.onApproximationReady(getApproximation(model.getPoints(), network));
-	}
 }

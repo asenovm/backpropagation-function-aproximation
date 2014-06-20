@@ -14,7 +14,9 @@ import edu.fmi.nn.backpropagation.model.ScreenInfo;
 
 public class FunctionView extends JFrame implements ModelListener, ViewCallback {
 
-	private FunctionPanel functionPanel;
+	private final MenuPanel menuPanel;
+
+	private final FunctionPanel functionPanel;
 
 	private ViewCallback callback;
 
@@ -34,9 +36,9 @@ public class FunctionView extends JFrame implements ModelListener, ViewCallback 
 		functionPanel = new FunctionPanel();
 		add(functionPanel, BorderLayout.PAGE_START);
 
-		final MenuPanel panel = new MenuPanel();
-		panel.setCallback(this);
-		add(panel, BorderLayout.PAGE_END);
+		menuPanel = new MenuPanel();
+		menuPanel.setCallback(this);
+		add(menuPanel, BorderLayout.PAGE_END);
 
 		pack();
 		setVisible(true);
@@ -74,11 +76,6 @@ public class FunctionView extends JFrame implements ModelListener, ViewCallback 
 	}
 
 	@Override
-	public void onTrainClicked() {
-		callback.onTrainClicked();
-	}
-
-	@Override
 	public void onClearClicked() {
 		functionPanel.clear();
 		callback.onClearClicked();
@@ -87,6 +84,14 @@ public class FunctionView extends JFrame implements ModelListener, ViewCallback 
 	@Override
 	public void onApproximateClicked() {
 		callback.onApproximateClicked();
+	}
+
+	public void onStartTraining() {
+		menuPanel.onStartTraining();
+	}
+
+	public void onEndTraining() {
+		menuPanel.onEndTraining();
 	}
 
 }

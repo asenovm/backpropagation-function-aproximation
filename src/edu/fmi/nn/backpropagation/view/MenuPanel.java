@@ -54,10 +54,14 @@ public class MenuPanel extends JPanel {
 
 	private ViewCallback callback;
 
-	private class TrainOnMouseListener extends SimpleOnMouseListener {
+	private final JButton approximateButton;
+
+	private final JButton clearButton;
+
+	private class ApproximateOnMouseListener extends SimpleOnMouseListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			callback.onTrainClicked();
+			callback.onApproximateClicked();
 		}
 	}
 
@@ -65,13 +69,6 @@ public class MenuPanel extends JPanel {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			callback.onClearClicked();
-		}
-	}
-
-	private class ApproximateOnMouseListener extends SimpleOnMouseListener {
-		@Override
-		public void mouseClicked(MouseEvent event) {
-			callback.onApproximateClicked();
 		}
 	}
 
@@ -84,9 +81,8 @@ public class MenuPanel extends JPanel {
 		setMaximumSize(dimension);
 		setPreferredSize(dimension);
 
-		createAndAddButton(TEXT_TRAIN, new TrainOnMouseListener());
-		createAndAddButton(TEXT_CLEAR, new ClearOnMouseListener());
-		createAndAddButton(TEXT_APPROXIMATE, new ApproximateOnMouseListener());
+		approximateButton = createAndAddButton(TEXT_APPROXIMATE, new ApproximateOnMouseListener());
+		clearButton = createAndAddButton(TEXT_CLEAR, new ClearOnMouseListener());
 
 		setBackground(Color.GRAY);
 	}
@@ -107,7 +103,7 @@ public class MenuPanel extends JPanel {
 		this.callback = callback;
 	}
 
-	private void createAndAddButton(final String text,
+	private JButton createAndAddButton(final String text,
 			final MouseListener listener) {
 		final Dimension dimension = new Dimension(WIDTH_BUTTON, HEIGHT_BUTTON);
 
@@ -117,6 +113,18 @@ public class MenuPanel extends JPanel {
 		button.setFocusPainted(false);
 		button.addMouseListener(listener);
 		add(button);
+
+		return button;
+	}
+
+	public void onStartTraining() {
+		approximateButton.setEnabled(false);
+		clearButton.setEnabled(false);
+	}
+
+	public void onEndTraining() {
+		approximateButton.setEnabled(true);
+		clearButton.setEnabled(true);
 	}
 
 }
