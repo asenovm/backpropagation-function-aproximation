@@ -9,7 +9,6 @@ import java.util.List;
 import javax.swing.JFrame;
 
 import edu.fmi.nn.backpropagation.ModelListener;
-import edu.fmi.nn.backpropagation.model.FunctionModel;
 import edu.fmi.nn.backpropagation.model.PointDouble;
 
 public class FunctionView extends JFrame implements ModelListener, ViewCallback {
@@ -69,12 +68,13 @@ public class FunctionView extends JFrame implements ModelListener, ViewCallback 
 	}
 
 	@Override
-	public void onModelChanged(FunctionModel model) {
-		functionPanel.onModelChanged(model);
+	public void onUserPointAdded(final List<PointDouble> points) {
+		functionPanel.onUserPointAdded(points);
 	}
 
-	public void onChange(final List<PointDouble> points) {
-		functionPanel.onChange(points);
+	@Override
+	public void onApproximationReady(List<PointDouble> function) {
+		functionPanel.onApproximationReady(function);
 	}
 
 	public void setCallback(final ViewCallback callback) {

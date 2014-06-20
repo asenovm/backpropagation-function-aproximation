@@ -1,6 +1,5 @@
 package edu.fmi.nn.backpropagation.model;
 
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Collections;
@@ -18,7 +17,12 @@ public class FunctionModel implements MouseListener {
 	private static class SimpleModelListener implements ModelListener {
 
 		@Override
-		public void onModelChanged(FunctionModel model) {
+		public void onUserPointAdded(final List<PointDouble> points) {
+			// blank
+		}
+
+		@Override
+		public void onApproximationReady(List<PointDouble> function) {
 			// blank
 		}
 
@@ -40,7 +44,7 @@ public class FunctionModel implements MouseListener {
 	@Override
 	public void mouseClicked(MouseEvent event) {
 		points.add(new PointDouble(event.getX(), event.getY()));
-		listener.onModelChanged(this);
+		listener.onUserPointAdded(getPoints());
 	}
 
 	@Override

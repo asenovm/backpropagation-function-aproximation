@@ -1,6 +1,8 @@
 package edu.fmi.nn.backpropagation;
 
-import edu.fmi.nn.backpropagation.model.FunctionModel;
+import java.util.List;
+
+import edu.fmi.nn.backpropagation.model.PointDouble;
 
 /**
  * Implementations are listeners for changes in the model
@@ -10,10 +12,19 @@ import edu.fmi.nn.backpropagation.model.FunctionModel;
  */
 public interface ModelListener {
 	/**
-	 * A callback fired when a change to the model has been made
+	 * A callback fired when a new point has been added by the user
 	 * 
 	 * @param model
 	 *            the model object that has changed
 	 */
-	void onModelChanged(final FunctionModel model);
+	void onUserPointAdded(final List<PointDouble> points);
+
+	/**
+	 * A callback fired when the function, covering the input points has been
+	 * approximated
+	 * 
+	 * @param function
+	 *            the discrete representation of the given function
+	 */
+	void onApproximationReady(final List<PointDouble> function);
 }

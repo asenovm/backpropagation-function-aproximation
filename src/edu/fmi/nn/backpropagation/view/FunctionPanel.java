@@ -10,7 +10,6 @@ import java.util.List;
 import javax.swing.JPanel;
 
 import edu.fmi.nn.backpropagation.ModelListener;
-import edu.fmi.nn.backpropagation.model.FunctionModel;
 import edu.fmi.nn.backpropagation.model.PointDouble;
 
 public class FunctionPanel extends JPanel implements ModelListener {
@@ -152,15 +151,16 @@ public class FunctionPanel extends JPanel implements ModelListener {
 	}
 
 	@Override
-	public void onModelChanged(FunctionModel model) {
+	public void onUserPointAdded(final List<PointDouble> points) {
 		userInputPoints.clear();
-		userInputPoints.addAll(model.getPoints());
+		userInputPoints.addAll(points);
 		repaint();
 	}
 
-	public void onChange(final List<PointDouble> points) {
+	@Override
+	public void onApproximationReady(List<PointDouble> function) {
 		this.points.clear();
-		this.points.addAll(points);
+		this.points.addAll(function);
 		repaint();
 	}
 

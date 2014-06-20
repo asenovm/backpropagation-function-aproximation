@@ -2,7 +2,6 @@ package edu.fmi.nn.backpropagation;
 
 import static edu.fmi.nn.backpropagation.view.FunctionPanel.WIDTH_FRAME;
 
-import java.awt.Point;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,7 +9,6 @@ import javax.swing.SwingUtilities;
 
 import edu.fmi.nn.backpropagation.model.FunctionModel;
 import edu.fmi.nn.backpropagation.model.PointDouble;
-import edu.fmi.nn.backpropagation.view.FunctionPanel;
 import edu.fmi.nn.backpropagation.view.FunctionView;
 import edu.fmi.nn.backpropagation.view.ViewCallback;
 
@@ -55,7 +53,12 @@ public class FunctionApproximation implements ViewCallback {
 		}
 		network.train(trainPoints);
 
-		final List<PointDouble> res = new LinkedList<PointDouble>();
+		view.onApproximationReady(getApproximation(points, network));
+	}
+
+	private List<PointDouble> getApproximation(final List<PointDouble> points,
+			final NeuralNetwork network) {
+		final List<PointDouble> approximation = new LinkedList<PointDouble>();
 		int j = 0;
 		for (int i = 0; i < WIDTH_FRAME / points.size(); ++i) {
 			final double[] input = new double[points.size()];
@@ -64,13 +67,12 @@ public class FunctionApproximation implements ViewCallback {
 			}
 			final double[] output = network.computeOutputs(input);
 			for (int t = 0; t < points.size(); ++t) {
-				res.add(CoordinatesConverter
+				approximation.add(CoordinatesConverter
 						.toScreenCoordinates(new PointDouble(input[t],
 								output[t])));
 			}
 		}
-		System.out.println("on change with " + res);
-		view.onChange(res);
+		return approximation;
 	}
 
 	@Override
