@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.LayoutManager;
+import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,8 +17,6 @@ import edu.fmi.nn.backpropagation.model.PointDouble;
 import edu.fmi.nn.backpropagation.model.ScreenInfo;
 
 public class FunctionPanel extends JPanel implements ModelListener {
-
-	private static final String TEXT_WAIT = "Please wait for the output to be computed";
 
 	/**
 	 * {@value}
@@ -32,22 +31,12 @@ public class FunctionPanel extends JPanel implements ModelListener {
 	/**
 	 * {@value}
 	 */
-	private static final int OFFSET_X_COORDINATE_SYSTEM_TEXT = 10;
+	private static final int TEXT_WAIT_SIZE = 26;
 
 	/**
 	 * {@value}
 	 */
-	private static final int OFFSET_Y_COORDINATE_SYSTEM_TEXT = 20;
-
-	/**
-	 * {@value}
-	 */
-	private static final int OFFSET_SEPARATOR_COORDINATE_SYSTEM = 5;
-
-	/**
-	 * {@value}
-	 */
-	private static final int STEP_SEPARATOR_COORDINATE_SYSTEM = 40;
+	private static final String TEXT_WAIT = "Please wait for the output to be computed";
 
 	/**
 	 * {@value}
@@ -57,6 +46,8 @@ public class FunctionPanel extends JPanel implements ModelListener {
 	private final List<PointDouble> userInputPoints;
 
 	private final List<PointDouble> points;
+
+	private final CoordinateSystemView coordinateSystem;
 
 	public FunctionPanel(LayoutManager layout, boolean isDoubleBuffered) {
 		super(layout, isDoubleBuffered);
@@ -69,6 +60,8 @@ public class FunctionPanel extends JPanel implements ModelListener {
 
 		points = new LinkedList<PointDouble>();
 		userInputPoints = new LinkedList<PointDouble>();
+
+		coordinateSystem = new CoordinateSystemView();
 	}
 
 	public FunctionPanel() {
@@ -101,54 +94,11 @@ public class FunctionPanel extends JPanel implements ModelListener {
 
 		graphics.setColor(Color.BLUE);
 		for (final PointDouble point : userInputPoints) {
-			graphics.fillOval((int) point.x, (int) point.y, WIDTH_POINT,
-					HEIGHT_POINT);
+			graphics.fillOval((int) point.x - WIDTH_POINT / 2, (int) point.y
+					- HEIGHT_POINT / 2, WIDTH_POINT, HEIGHT_POINT);
 		}
 
-		graphics.setColor(Color.BLACK);
-
-		drawAxis(graphics);
-		drawXAxisSeparators(graphics);
-		drawYAxisSeparators(graphics);
-
-	}
-
-	private void drawYAxisSeparators(final Graphics graphics) {
-		final int ySteps = ScreenInfo.HEIGHT_PANE
-				/ STEP_SEPARATOR_COORDINATE_SYSTEM;
-		int start = ySteps / 2;
-		for (int i = STEP_SEPARATOR_COORDINATE_SYSTEM; i < ScreenInfo.HEIGHT_PANE; i += STEP_SEPARATOR_COORDINATE_SYSTEM) {
-			graphics.drawLine(ScreenInfo.WIDTH / 2
-					- OFFSET_SEPARATOR_COORDINATE_SYSTEM, i, ScreenInfo.WIDTH
-					/ 2 + OFFSET_SEPARATOR_COORDINATE_SYSTEM, i);
-			if (start != 0) {
-				graphics.drawString(Integer.toString(start), ScreenInfo.WIDTH
-						/ 2 - OFFSET_Y_COORDINATE_SYSTEM_TEXT, i);
-			}
-			--start;
-		}
-	}
-
-	private void drawXAxisSeparators(Graphics graphics) {
-		final int xSteps = ScreenInfo.WIDTH / STEP_SEPARATOR_COORDINATE_SYSTEM;
-		int start = -xSteps / 2 + 1;
-		for (int i = STEP_SEPARATOR_COORDINATE_SYSTEM; i < ScreenInfo.WIDTH; i += STEP_SEPARATOR_COORDINATE_SYSTEM) {
-			graphics.drawLine(i, ScreenInfo.HEIGHT_PANE / 2
-					- OFFSET_SEPARATOR_COORDINATE_SYSTEM, i,
-					ScreenInfo.HEIGHT_PANE / 2
-							+ OFFSET_SEPARATOR_COORDINATE_SYSTEM);
-			graphics.drawString(Integer.toString(start), i
-					- OFFSET_X_COORDINATE_SYSTEM_TEXT, ScreenInfo.HEIGHT_PANE
-					/ 2 + OFFSET_Y_COORDINATE_SYSTEM_TEXT);
-			++start;
-		}
-	}
-
-	private void drawAxis(Graphics graphics) {
-		graphics.drawLine(0, ScreenInfo.HEIGHT_PANE / 2, ScreenInfo.WIDTH,
-				ScreenInfo.HEIGHT_PANE / 2);
-		graphics.drawLine(ScreenInfo.WIDTH / 2, 0, ScreenInfo.WIDTH / 2,
-				ScreenInfo.HEIGHT_PANE);
+		coordinateSystem.draw(graphics);
 	}
 
 	@Override
@@ -181,14 +131,12 @@ public class FunctionPanel extends JPanel implements ModelListener {
 	public void onStartTraining() {
 		final Graphics graphics = getGraphics();
 
-		final Font font = new Font(Font.SANS_SERIF, Font.CENTER_BASELINE
-				| Font.BOLD, 26);
-
+		final int fontStyle = Font.CENTER_BASELINE | Font.BOLD;
+		final Font font = new Font(Font.SANS_SERIF, fontStyle, TEXT_WAIT_SIZE);
 		graphics.setFont(font);
 
 		FontMetrics fm = graphics.getFontMetrics(font);
-		java.awt.geom.Rectangle2D rect = fm
-				.getStringBounds(TEXT_WAIT, graphics);
+		Rectangle2D rect = fm.getStringBounds(TEXT_WAIT, graphics);
 
 		int textHeight = (int) (rect.getHeight());
 		int textWidth = (int) (rect.getWidth());
