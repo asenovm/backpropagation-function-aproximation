@@ -66,4 +66,8 @@ public class FunctionModel implements MouseListener {
 	public void mouseReleased(MouseEvent event) {
 		// blank
 	}
+
+	public void clear() {
+		points.clear();
+	}
 }

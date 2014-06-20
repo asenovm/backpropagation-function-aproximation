@@ -77,8 +77,9 @@ public class FunctionView extends JFrame implements ModelListener, ViewCallback 
 
 	@Override
 	public void onClearClicked() {
-		functionPanel.clear();
-		callback.onClearClicked();
+		if (functionPanel.clear()) {
+			callback.onClearClicked();
+		}
 	}
 
 	@Override
@@ -88,10 +89,12 @@ public class FunctionView extends JFrame implements ModelListener, ViewCallback 
 
 	public void onStartTraining() {
 		menuPanel.onStartTraining();
+		functionPanel.onStartTraining();
 	}
 
 	public void onEndTraining() {
 		menuPanel.onEndTraining();
+		functionPanel.onEndTraining();
 	}
 
 }

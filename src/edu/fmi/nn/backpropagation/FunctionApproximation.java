@@ -95,7 +95,7 @@ public class FunctionApproximation implements ViewCallback {
 
 	@Override
 	public void onClearClicked() {
-		// blank as for now
+		model.clear();
 	}
 
 }

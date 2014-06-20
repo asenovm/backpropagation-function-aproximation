@@ -35,11 +35,6 @@ public class MenuPanel extends JPanel {
 	/**
 	 * {@value}
 	 */
-	private static final String TEXT_TRAIN = "Train";
-
-	/**
-	 * {@value}
-	 */
 	private static final int HEIGHT_PANEL_MENU = 200;
 
 	/**
@@ -81,7 +76,8 @@ public class MenuPanel extends JPanel {
 		setMaximumSize(dimension);
 		setPreferredSize(dimension);
 
-		approximateButton = createAndAddButton(TEXT_APPROXIMATE, new ApproximateOnMouseListener());
+		approximateButton = createAndAddButton(TEXT_APPROXIMATE,
+				new ApproximateOnMouseListener());
 		clearButton = createAndAddButton(TEXT_CLEAR, new ClearOnMouseListener());
 
 		setBackground(Color.GRAY);
@@ -92,7 +88,7 @@ public class MenuPanel extends JPanel {
 	}
 
 	public MenuPanel(boolean isDoubleBuffered) {
-		this(new FlowLayout(FlowLayout.LEFT), isDoubleBuffered);
+		this(new FlowLayout(FlowLayout.CENTER), isDoubleBuffered);
 	}
 
 	public MenuPanel(LayoutManager layout) {

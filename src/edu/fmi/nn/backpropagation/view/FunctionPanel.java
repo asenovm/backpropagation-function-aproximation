@@ -2,6 +2,8 @@ package edu.fmi.nn.backpropagation.view;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.LayoutManager;
 import java.util.LinkedList;
@@ -14,6 +16,8 @@ import edu.fmi.nn.backpropagation.model.PointDouble;
 import edu.fmi.nn.backpropagation.model.ScreenInfo;
 
 public class FunctionPanel extends JPanel implements ModelListener {
+
+	private static final String TEXT_WAIT = "Please wait for the output to be computed";
 
 	/**
 	 * {@value}
@@ -83,18 +87,6 @@ public class FunctionPanel extends JPanel implements ModelListener {
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
 
-		graphics.setColor(Color.BLACK);
-
-		drawAxis(graphics);
-		drawXAxisSeparators(graphics);
-		drawYAxisSeparators(graphics);
-
-		graphics.setColor(Color.BLUE);
-		for (final PointDouble point : userInputPoints) {
-			graphics.fillOval((int) point.x, (int) point.y, WIDTH_POINT,
-					HEIGHT_POINT);
-		}
-
 		final int[] xPoints = new int[points.size()];
 		final int[] yPoints = new int[points.size()];
 
@@ -106,6 +98,19 @@ public class FunctionPanel extends JPanel implements ModelListener {
 
 		graphics.setColor(Color.RED);
 		graphics.drawPolyline(xPoints, yPoints, points.size());
+
+		graphics.setColor(Color.BLUE);
+		for (final PointDouble point : userInputPoints) {
+			graphics.fillOval((int) point.x, (int) point.y, WIDTH_POINT,
+					HEIGHT_POINT);
+		}
+
+		graphics.setColor(Color.BLACK);
+
+		drawAxis(graphics);
+		drawXAxisSeparators(graphics);
+		drawYAxisSeparators(graphics);
+
 	}
 
 	private void drawYAxisSeparators(final Graphics graphics) {
@@ -160,12 +165,40 @@ public class FunctionPanel extends JPanel implements ModelListener {
 		repaint();
 	}
 
-	public void clear() {
+	public boolean clear() {
+		boolean result;
 		if (points.isEmpty()) {
 			userInputPoints.clear();
+			result = true;
 		} else {
 			points.clear();
+			result = false;
 		}
+		repaint();
+		return result;
+	}
+
+	public void onStartTraining() {
+		final Graphics graphics = getGraphics();
+
+		final Font font = new Font(Font.SANS_SERIF, Font.CENTER_BASELINE
+				| Font.BOLD, 26);
+
+		graphics.setFont(font);
+
+		FontMetrics fm = graphics.getFontMetrics(font);
+		java.awt.geom.Rectangle2D rect = fm
+				.getStringBounds(TEXT_WAIT, graphics);
+
+		int textHeight = (int) (rect.getHeight());
+		int textWidth = (int) (rect.getWidth());
+
+		graphics.drawString(TEXT_WAIT, (ScreenInfo.WIDTH - textWidth) / 2,
+				(ScreenInfo.HEIGHT_PANE - textHeight) / 2);
+
+	}
+
+	public void onEndTraining() {
 		repaint();
 	}
 
