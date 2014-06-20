@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 
 import edu.fmi.nn.backpropagation.ModelListener;
 import edu.fmi.nn.backpropagation.model.PointDouble;
+import edu.fmi.nn.backpropagation.model.ScreenInfo;
 
 public class FunctionPanel extends JPanel implements ModelListener {
 
@@ -49,16 +50,6 @@ public class FunctionPanel extends JPanel implements ModelListener {
 	 */
 	private static final long serialVersionUID = 5458800656134374015L;
 
-	/**
-	 * {@value}
-	 */
-	public static final int WIDTH_FRAME = 800;
-
-	/**
-	 * {@value}
-	 */
-	public static final int HEIGHT_FRAME = 600;
-
 	private final List<PointDouble> userInputPoints;
 
 	private final List<PointDouble> points;
@@ -66,7 +57,8 @@ public class FunctionPanel extends JPanel implements ModelListener {
 	public FunctionPanel(LayoutManager layout, boolean isDoubleBuffered) {
 		super(layout, isDoubleBuffered);
 
-		final Dimension size = new Dimension(WIDTH_FRAME, HEIGHT_FRAME);
+		final Dimension size = new Dimension(ScreenInfo.WIDTH,
+				ScreenInfo.HEIGHT_PANE);
 		setMinimumSize(size);
 		setMaximumSize(size);
 		setPreferredSize(size);
@@ -117,37 +109,41 @@ public class FunctionPanel extends JPanel implements ModelListener {
 	}
 
 	private void drawYAxisSeparators(final Graphics graphics) {
-		final int ySteps = HEIGHT_FRAME / STEP_SEPARATOR_COORDINATE_SYSTEM;
+		final int ySteps = ScreenInfo.HEIGHT_PANE
+				/ STEP_SEPARATOR_COORDINATE_SYSTEM;
 		int start = ySteps / 2;
-		for (int i = STEP_SEPARATOR_COORDINATE_SYSTEM; i < HEIGHT_FRAME; i += STEP_SEPARATOR_COORDINATE_SYSTEM) {
-			graphics.drawLine(WIDTH_FRAME / 2
-					- OFFSET_SEPARATOR_COORDINATE_SYSTEM, i, WIDTH_FRAME / 2
-					+ OFFSET_SEPARATOR_COORDINATE_SYSTEM, i);
+		for (int i = STEP_SEPARATOR_COORDINATE_SYSTEM; i < ScreenInfo.HEIGHT_PANE; i += STEP_SEPARATOR_COORDINATE_SYSTEM) {
+			graphics.drawLine(ScreenInfo.WIDTH / 2
+					- OFFSET_SEPARATOR_COORDINATE_SYSTEM, i, ScreenInfo.WIDTH
+					/ 2 + OFFSET_SEPARATOR_COORDINATE_SYSTEM, i);
 			if (start != 0) {
-				graphics.drawString(Integer.toString(start), WIDTH_FRAME / 2
-						- OFFSET_Y_COORDINATE_SYSTEM_TEXT, i);
+				graphics.drawString(Integer.toString(start), ScreenInfo.WIDTH
+						/ 2 - OFFSET_Y_COORDINATE_SYSTEM_TEXT, i);
 			}
 			--start;
 		}
 	}
 
 	private void drawXAxisSeparators(Graphics graphics) {
-		final int xSteps = WIDTH_FRAME / STEP_SEPARATOR_COORDINATE_SYSTEM;
+		final int xSteps = ScreenInfo.WIDTH / STEP_SEPARATOR_COORDINATE_SYSTEM;
 		int start = -xSteps / 2 + 1;
-		for (int i = STEP_SEPARATOR_COORDINATE_SYSTEM; i < WIDTH_FRAME; i += STEP_SEPARATOR_COORDINATE_SYSTEM) {
-			graphics.drawLine(i, HEIGHT_FRAME / 2
-					- OFFSET_SEPARATOR_COORDINATE_SYSTEM, i, HEIGHT_FRAME / 2
-					+ OFFSET_SEPARATOR_COORDINATE_SYSTEM);
+		for (int i = STEP_SEPARATOR_COORDINATE_SYSTEM; i < ScreenInfo.WIDTH; i += STEP_SEPARATOR_COORDINATE_SYSTEM) {
+			graphics.drawLine(i, ScreenInfo.HEIGHT_PANE / 2
+					- OFFSET_SEPARATOR_COORDINATE_SYSTEM, i,
+					ScreenInfo.HEIGHT_PANE / 2
+							+ OFFSET_SEPARATOR_COORDINATE_SYSTEM);
 			graphics.drawString(Integer.toString(start), i
-					- OFFSET_X_COORDINATE_SYSTEM_TEXT, HEIGHT_FRAME / 2
-					+ OFFSET_Y_COORDINATE_SYSTEM_TEXT);
+					- OFFSET_X_COORDINATE_SYSTEM_TEXT, ScreenInfo.HEIGHT_PANE
+					/ 2 + OFFSET_Y_COORDINATE_SYSTEM_TEXT);
 			++start;
 		}
 	}
 
 	private void drawAxis(Graphics graphics) {
-		graphics.drawLine(0, HEIGHT_FRAME / 2, WIDTH_FRAME, HEIGHT_FRAME / 2);
-		graphics.drawLine(WIDTH_FRAME / 2, 0, WIDTH_FRAME / 2, HEIGHT_FRAME);
+		graphics.drawLine(0, ScreenInfo.HEIGHT_PANE / 2, ScreenInfo.WIDTH,
+				ScreenInfo.HEIGHT_PANE / 2);
+		graphics.drawLine(ScreenInfo.WIDTH / 2, 0, ScreenInfo.WIDTH / 2,
+				ScreenInfo.HEIGHT_PANE);
 	}
 
 	@Override

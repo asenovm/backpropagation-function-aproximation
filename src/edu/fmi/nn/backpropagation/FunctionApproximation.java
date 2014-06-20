@@ -1,7 +1,5 @@
 package edu.fmi.nn.backpropagation;
 
-import static edu.fmi.nn.backpropagation.view.FunctionPanel.WIDTH_FRAME;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,6 +7,7 @@ import javax.swing.SwingUtilities;
 
 import edu.fmi.nn.backpropagation.model.FunctionModel;
 import edu.fmi.nn.backpropagation.model.PointDouble;
+import edu.fmi.nn.backpropagation.model.ScreenInfo;
 import edu.fmi.nn.backpropagation.view.FunctionView;
 import edu.fmi.nn.backpropagation.view.ViewCallback;
 
@@ -60,10 +59,10 @@ public class FunctionApproximation implements ViewCallback {
 			final NeuralNetwork network) {
 		final List<PointDouble> approximation = new LinkedList<PointDouble>();
 		int j = 0;
-		for (int i = 0; i < WIDTH_FRAME / points.size(); ++i) {
+		for (int i = 0; i < ScreenInfo.WIDTH / points.size(); ++i) {
 			final double[] input = new double[points.size()];
 			for (int p = 0; p < points.size(); ++p) {
-				input[p] = j++ / (double) WIDTH_FRAME;
+				input[p] = j++ / (double) ScreenInfo.WIDTH;
 			}
 			final double[] output = network.computeOutputs(input);
 			for (int t = 0; t < points.size(); ++t) {

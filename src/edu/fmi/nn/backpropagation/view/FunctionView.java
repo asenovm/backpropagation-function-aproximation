@@ -10,18 +10,9 @@ import javax.swing.JFrame;
 
 import edu.fmi.nn.backpropagation.ModelListener;
 import edu.fmi.nn.backpropagation.model.PointDouble;
+import edu.fmi.nn.backpropagation.model.ScreenInfo;
 
 public class FunctionView extends JFrame implements ModelListener, ViewCallback {
-
-	/**
-	 * {@value}
-	 */
-	private static final int HEIGHT_FRAME = 800;
-
-	/**
-	 * {@value}
-	 */
-	private static final int WIDTH_FRAME = 800;
 
 	private FunctionPanel functionPanel;
 
@@ -31,7 +22,8 @@ public class FunctionView extends JFrame implements ModelListener, ViewCallback 
 		super(title, gc);
 		setLayout(new BorderLayout());
 
-		final Dimension dimension = new Dimension(WIDTH_FRAME, HEIGHT_FRAME);
+		final Dimension dimension = new Dimension(ScreenInfo.WIDTH,
+				ScreenInfo.HEIGHT_SCREEN);
 		setMinimumSize(dimension);
 		setMaximumSize(dimension);
 		setPreferredSize(dimension);
