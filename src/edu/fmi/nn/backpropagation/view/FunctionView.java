@@ -8,12 +8,19 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
+import edu.fmi.nn.backpropagation.ComputationCallback;
 import edu.fmi.nn.backpropagation.ModelListener;
 import edu.fmi.nn.backpropagation.model.NetworkConfiguration;
 import edu.fmi.nn.backpropagation.model.PointDouble;
 import edu.fmi.nn.backpropagation.model.ScreenInfo;
 
-public class FunctionView extends JFrame implements ModelListener, ViewCallback {
+public class FunctionView extends JFrame implements ModelListener,
+		ViewCallback, ComputationCallback {
+
+	/**
+	 * {@value}
+	 */
+	private static final String TITLE_APP = "Function Approximation";
 
 	private final MenuPanel menuPanel;
 
@@ -22,7 +29,7 @@ public class FunctionView extends JFrame implements ModelListener, ViewCallback 
 	private ViewCallback callback;
 
 	public FunctionView(String title, GraphicsConfiguration gc) {
-		super(title, gc);
+		super(TITLE_APP, gc);
 		setLayout(new BorderLayout());
 
 		final Dimension dimension = new Dimension(ScreenInfo.WIDTH,
@@ -62,6 +69,10 @@ public class FunctionView extends JFrame implements ModelListener, ViewCallback 
 		this(title, null);
 	}
 
+	public void setCallback(final ViewCallback callback) {
+		this.callback = callback;
+	}
+
 	@Override
 	public void onUserPointAdded(final List<PointDouble> points) {
 		functionPanel.onUserPointAdded(points);
@@ -70,10 +81,6 @@ public class FunctionView extends JFrame implements ModelListener, ViewCallback 
 	@Override
 	public void onApproximationReady(List<PointDouble> function) {
 		functionPanel.onApproximationReady(function);
-	}
-
-	public void setCallback(final ViewCallback callback) {
-		this.callback = callback;
 	}
 
 	@Override
@@ -88,12 +95,14 @@ public class FunctionView extends JFrame implements ModelListener, ViewCallback 
 		callback.onApproximateClicked(configuration);
 	}
 
-	public void onStartTraining() {
+	@Override
+	public void onTrainStart() {
 		menuPanel.onStartTraining();
 		functionPanel.onStartTraining();
 	}
 
-	public void onEndTraining() {
+	@Override
+	public void onTrainEnd() {
 		menuPanel.onEndTraining();
 		functionPanel.onEndTraining();
 	}

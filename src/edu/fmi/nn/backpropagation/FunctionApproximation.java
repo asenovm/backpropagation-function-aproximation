@@ -16,11 +16,6 @@ import edu.fmi.nn.backpropagation.view.ViewCallback;
 
 public class FunctionApproximation implements ViewCallback {
 
-	/**
-	 * {@value}
-	 */
-	private static final String TITLE_APP = "Function Approximation";
-
 	private final FunctionModel model;
 
 	private final FunctionView view;
@@ -37,7 +32,8 @@ public class FunctionApproximation implements ViewCallback {
 
 		@Override
 		public void run() {
-			view.onStartTraining();
+			view.onTrainStart();
+			
 			final List<PointDouble> points = model.getPoints();
 			final List<PointDouble> trainPoints = new LinkedList<PointDouble>();
 			for (final PointDouble point : points) {
@@ -48,7 +44,7 @@ public class FunctionApproximation implements ViewCallback {
 			network.train(trainPoints);
 
 			view.onApproximationReady(getApproximation());
-			view.onEndTraining();
+			view.onTrainEnd();
 		}
 	}
 
@@ -58,7 +54,7 @@ public class FunctionApproximation implements ViewCallback {
 		network = new NeuralNetwork(configuration);
 
 		model = new FunctionModel();
-		view = new FunctionView(TITLE_APP);
+		view = new FunctionView();
 
 		view.addMouseListener(model);
 		view.setCallback(this);
