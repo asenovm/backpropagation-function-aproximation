@@ -4,11 +4,13 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.HeadlessException;
+import java.util.List;
 
 import javax.swing.JFrame;
 
 import edu.fmi.nn.backpropagation.ModelListener;
 import edu.fmi.nn.backpropagation.model.FunctionModel;
+import edu.fmi.nn.backpropagation.model.PointDouble;
 
 public class FunctionView extends JFrame implements ModelListener, ViewCallback {
 
@@ -69,6 +71,10 @@ public class FunctionView extends JFrame implements ModelListener, ViewCallback 
 	@Override
 	public void onModelChanged(FunctionModel model) {
 		functionPanel.onModelChanged(model);
+	}
+
+	public void onChange(final List<PointDouble> points) {
+		functionPanel.onChange(points);
 	}
 
 	public void setCallback(final ViewCallback callback) {

@@ -1,26 +1,26 @@
 package edu.fmi.nn.backpropagation;
 
-import java.awt.Point;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
 import edu.fmi.nn.backpropagation.Layer.Type;
+import edu.fmi.nn.backpropagation.model.PointDouble;
 
 public class NeuralNetwork {
 
-	private static final int NUMBER_HIDDEN_NODES = 4;
+	private static final int NUMBER_HIDDEN_NODES = 8;
 
 	/**
 	 * {@value}
 	 */
-	private static final double MOMENTUM = 0.04;
+	private static final double MOMENTUM = 0.1;
 
 	/**
 	 * {@value}
 	 */
-	private static final double LEARNING_RATE = 0.90;
+	private static final double LEARNING_RATE = 0.01;
 
 	/**
 	 * {@value}
@@ -30,7 +30,7 @@ public class NeuralNetwork {
 	/**
 	 * {@value}
 	 */
-	private static final int MAX_NUM_EPOCHS = 1000;
+	private static final int MAX_NUM_EPOCHS = 1000000;
 
 	private final Layer inputLayer;
 
@@ -38,7 +38,7 @@ public class NeuralNetwork {
 
 	private final Layer outputLayer;
 
-	public NeuralNetwork(final List<Point> points) {
+	public NeuralNetwork(final List<PointDouble> points) {
 		final List<Node> inputNodes = new LinkedList<Node>();
 		for (int i = 0; i < points.size(); ++i) {
 			inputNodes.add(new Node());
@@ -79,13 +79,13 @@ public class NeuralNetwork {
 		outputLayer = Layer.from(outputNodes, Type.OUTPUT);
 	}
 
-	public void train(final List<Point> points) {
+	public void train(final List<PointDouble> points) {
 		double[] inputValues = new double[points.size()];
 		double[] targetValues = new double[points.size()];
 
 		for (int i = 0; i < points.size(); ++i) {
-			inputValues[i] = points.get(i).getX();
-			targetValues[i] = points.get(i).getY();
+			inputValues[i] = points.get(i).x;
+			targetValues[i] = points.get(i).y;
 		}
 
 		int epochsCount = 0;
@@ -94,11 +94,11 @@ public class NeuralNetwork {
 		while (isTraining(targetValues, epochsCount, yValues)) {
 			updateWeights(targetValues);
 			yValues = computeOutputs(inputValues);
-			System.out.println("target values are "
-					+ Arrays.toString(targetValues));
-			System.out.println("real values are " + Arrays.toString(yValues));
 			++epochsCount;
 		}
+		System.out
+				.println("target values are " + Arrays.toString(targetValues));
+		System.out.println("real values are " + Arrays.toString(yValues));
 	}
 
 	private boolean isTraining(double[] targetValues, int epochsCount,
@@ -177,7 +177,7 @@ public class NeuralNetwork {
 		}
 	}
 
-	private double[] computeOutputs(double[] inputValues) {
+	public double[] computeOutputs(double[] inputValues) {
 		final List<Node> inputNodes = inputLayer.getNodes();
 		final List<Node> outputNodes = outputLayer.getNodes();
 

@@ -11,7 +11,7 @@ import edu.fmi.nn.backpropagation.ModelListener;
 
 public class FunctionModel implements MouseListener {
 
-	private final List<Point> points;
+	private final List<PointDouble> points;
 
 	private ModelListener listener;
 
@@ -25,7 +25,7 @@ public class FunctionModel implements MouseListener {
 	}
 
 	public FunctionModel() {
-		points = new LinkedList<Point>();
+		points = new LinkedList<PointDouble>();
 		listener = new SimpleModelListener();
 	}
 
@@ -33,13 +33,13 @@ public class FunctionModel implements MouseListener {
 		this.listener = listener;
 	}
 
-	public List<Point> getPoints() {
+	public List<PointDouble> getPoints() {
 		return Collections.unmodifiableList(points);
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent event) {
-		points.add(new Point(event.getX(), event.getY()));
+		points.add(new PointDouble(event.getX(), event.getY()));
 		listener.onModelChanged(this);
 	}
 

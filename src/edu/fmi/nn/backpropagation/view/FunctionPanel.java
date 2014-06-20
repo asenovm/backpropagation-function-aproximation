@@ -1,14 +1,17 @@
 package edu.fmi.nn.backpropagation.view;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.LayoutManager;
-import java.awt.Point;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JPanel;
 
 import edu.fmi.nn.backpropagation.ModelListener;
 import edu.fmi.nn.backpropagation.model.FunctionModel;
+import edu.fmi.nn.backpropagation.model.PointDouble;
 
 public class FunctionPanel extends JPanel implements ModelListener {
 
@@ -50,12 +53,16 @@ public class FunctionPanel extends JPanel implements ModelListener {
 	/**
 	 * {@value}
 	 */
-	private static final int WIDTH_FRAME = 800;
+	public static final int WIDTH_FRAME = 800;
 
 	/**
 	 * {@value}
 	 */
-	private static final int HEIGHT_FRAME = 600;
+	public static final int HEIGHT_FRAME = 600;
+
+	private final List<PointDouble> userInputPoints;
+
+	private final List<PointDouble> points;
 
 	public FunctionPanel(LayoutManager layout, boolean isDoubleBuffered) {
 		super(layout, isDoubleBuffered);
@@ -64,6 +71,9 @@ public class FunctionPanel extends JPanel implements ModelListener {
 		setMinimumSize(size);
 		setMaximumSize(size);
 		setPreferredSize(size);
+
+		points = new LinkedList<PointDouble>();
+		userInputPoints = new LinkedList<PointDouble>();
 	}
 
 	public FunctionPanel() {
@@ -82,9 +92,29 @@ public class FunctionPanel extends JPanel implements ModelListener {
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
 
+		graphics.setColor(Color.BLACK);
+
 		drawAxis(graphics);
 		drawXAxisSeparators(graphics);
 		drawYAxisSeparators(graphics);
+
+		graphics.setColor(Color.BLUE);
+		for (final PointDouble point : userInputPoints) {
+			graphics.fillOval((int) point.x, (int) point.y, WIDTH_POINT,
+					HEIGHT_POINT);
+		}
+
+		final int[] xPoints = new int[points.size()];
+		final int[] yPoints = new int[points.size()];
+
+		for (int i = 0; i < points.size(); ++i) {
+			final PointDouble point = points.get(i);
+			xPoints[i] = (int) Math.round(point.x);
+			yPoints[i] = (int) Math.round(point.y);
+		}
+
+		graphics.setColor(Color.RED);
+		graphics.drawPolyline(xPoints, yPoints, points.size());
 	}
 
 	private void drawYAxisSeparators(final Graphics graphics) {
@@ -123,10 +153,15 @@ public class FunctionPanel extends JPanel implements ModelListener {
 
 	@Override
 	public void onModelChanged(FunctionModel model) {
-		final Graphics graphics = getGraphics();
-		for (final Point point : model.getPoints()) {
-			graphics.fillRect(point.x, point.y, WIDTH_POINT, HEIGHT_POINT);
-		}
+		userInputPoints.clear();
+		userInputPoints.addAll(model.getPoints());
+		repaint();
+	}
+
+	public void onChange(final List<PointDouble> points) {
+		this.points.clear();
+		this.points.addAll(points);
+		repaint();
 	}
 
 }
