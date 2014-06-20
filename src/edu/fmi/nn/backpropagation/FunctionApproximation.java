@@ -29,6 +29,29 @@ public class FunctionApproximation implements ViewCallback {
 
 	private final ExecutorService executor;
 
+	private final ApproximationRunnable approximationRunnable;
+
+	private class ApproximationRunnable implements Runnable {
+
+		public NetworkConfiguration configuration;
+
+		@Override
+		public void run() {
+			view.onStartTraining();
+			final List<PointDouble> points = model.getPoints();
+			final List<PointDouble> trainPoints = new LinkedList<PointDouble>();
+			for (final PointDouble point : points) {
+				trainPoints.add(CoordinatesConverter
+						.toNetworkCoordinates(point));
+			}
+			network.setConfiguration(configuration);
+			network.train(trainPoints);
+
+			view.onApproximationReady(getApproximation());
+			view.onEndTraining();
+		}
+	}
+
 	public FunctionApproximation() {
 		final NetworkConfiguration configuration = new NetworkConfiguration();
 
@@ -42,6 +65,7 @@ public class FunctionApproximation implements ViewCallback {
 		model.setListener(view);
 
 		executor = Executors.newSingleThreadExecutor();
+		approximationRunnable = new ApproximationRunnable();
 	}
 
 	@SuppressWarnings("unused")
@@ -56,50 +80,37 @@ public class FunctionApproximation implements ViewCallback {
 
 	@Override
 	public void onApproximateClicked(final NetworkConfiguration configuration) {
-		executor.execute(new Runnable() {
-
-			@Override
-			public void run() {
-				view.onStartTraining();
-				final List<PointDouble> points = model.getPoints();
-				final List<PointDouble> trainPoints = new LinkedList<PointDouble>();
-				for (final PointDouble point : points) {
-					trainPoints.add(CoordinatesConverter
-							.toNetworkCoordinates(point));
-				}
-				network.setConfiguration(configuration);
-				network.train(trainPoints);
-
-				view.onApproximationReady(getApproximation(model.getPoints(),
-						network));
-
-				view.onEndTraining();
-			}
-		});
-	}
-
-	private List<PointDouble> getApproximation(final List<PointDouble> points,
-			final NeuralNetwork network) {
-		final List<PointDouble> approximation = new LinkedList<PointDouble>();
-		int j = 0;
-		for (int i = 0; i < ScreenInfo.WIDTH / points.size(); ++i) {
-			final double[] input = new double[points.size()];
-			for (int p = 0; p < points.size(); ++p) {
-				input[p] = j++ / (double) ScreenInfo.WIDTH;
-			}
-			final double[] output = network.computeOutputs(input);
-			for (int t = 0; t < points.size(); ++t) {
-				approximation.add(CoordinatesConverter
-						.toScreenCoordinates(new PointDouble(input[t],
-								output[t])));
-			}
-		}
-		return approximation;
+		approximationRunnable.configuration = configuration;
+		executor.execute(approximationRunnable);
 	}
 
 	@Override
 	public void onClearClicked() {
 		model.clear();
+	}
+
+	private List<PointDouble> getApproximation() {
+		final List<PointDouble> points = model.getPoints();
+		final List<PointDouble> approximation = new LinkedList<PointDouble>();
+
+		int j = 0;
+		for (int i = 0; i < ScreenInfo.WIDTH / points.size(); ++i) {
+			final double[] input = new double[points.size()];
+
+			for (int p = 0; p < points.size(); ++p) {
+				input[p] = j++ / (double) ScreenInfo.WIDTH;
+			}
+
+			final double[] output = network.computeOutputs(input);
+
+			for (int t = 0; t < points.size(); ++t) {
+				final PointDouble outputPoint = new PointDouble(input[t],
+						output[t]);
+				approximation.add(CoordinatesConverter
+						.toScreenCoordinates(outputPoint));
+			}
+		}
+		return approximation;
 	}
 
 }
