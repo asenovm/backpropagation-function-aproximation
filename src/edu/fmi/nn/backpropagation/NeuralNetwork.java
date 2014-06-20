@@ -1,6 +1,5 @@
 package edu.fmi.nn.backpropagation;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -11,7 +10,7 @@ import edu.fmi.nn.backpropagation.model.PointDouble;
 
 public class NeuralNetwork {
 
-	private final NetworkConfiguration configuration;
+	private NetworkConfiguration configuration;
 
 	private Layer inputLayer;
 
@@ -83,9 +82,6 @@ public class NeuralNetwork {
 			yValues = computeOutputs(inputValues);
 			++epochsCount;
 		}
-		System.out
-				.println("target values are " + Arrays.toString(targetValues));
-		System.out.println("real values are " + Arrays.toString(yValues));
 	}
 
 	private boolean isTraining(double[] targetValues, int epochsCount,
@@ -208,6 +204,10 @@ public class NeuralNetwork {
 			node.addValue(node.getBias());
 			node.setValue(nextLayer.applyActivation(node.getValue()));
 		}
+	}
+
+	public void setConfiguration(final NetworkConfiguration configuration) {
+		this.configuration = configuration;
 	}
 
 }

@@ -55,7 +55,7 @@ public class FunctionApproximation implements ViewCallback {
 	}
 
 	@Override
-	public void onApproximateClicked() {
+	public void onApproximateClicked(final NetworkConfiguration configuration) {
 		executor.execute(new Runnable() {
 
 			@Override
@@ -67,6 +67,7 @@ public class FunctionApproximation implements ViewCallback {
 					trainPoints.add(CoordinatesConverter
 							.toNetworkCoordinates(point));
 				}
+				network.setConfiguration(configuration);
 				network.train(trainPoints);
 
 				view.onApproximationReady(getApproximation(model.getPoints(),

@@ -9,6 +9,7 @@ import java.util.List;
 import javax.swing.JFrame;
 
 import edu.fmi.nn.backpropagation.ModelListener;
+import edu.fmi.nn.backpropagation.model.NetworkConfiguration;
 import edu.fmi.nn.backpropagation.model.PointDouble;
 import edu.fmi.nn.backpropagation.model.ScreenInfo;
 
@@ -83,8 +84,8 @@ public class FunctionView extends JFrame implements ModelListener, ViewCallback 
 	}
 
 	@Override
-	public void onApproximateClicked() {
-		callback.onApproximateClicked();
+	public void onApproximateClicked(final NetworkConfiguration configuration) {
+		callback.onApproximateClicked(configuration);
 	}
 
 	public void onStartTraining() {

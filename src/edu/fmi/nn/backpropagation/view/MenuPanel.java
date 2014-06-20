@@ -12,6 +12,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import edu.fmi.nn.backpropagation.model.NetworkConfiguration;
+
 public class MenuPanel extends JPanel {
 
 	/**
@@ -55,10 +57,27 @@ public class MenuPanel extends JPanel {
 
 	private final JButton clearButton;
 
+	private final JTextArea hiddenUnits;
+
+	private final JTextArea learningRate;
+
+	private final JTextArea momentum;
+
+	private final JTextArea epochs;
+
 	private class ApproximateOnMouseListener extends SimpleOnMouseListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			callback.onApproximateClicked();
+			final int hiddenUnitsCount = Integer
+					.parseInt(hiddenUnits.getText());
+			final double learningRateValue = Double.parseDouble(learningRate
+					.getText());
+			final double momentumValue = Double.parseDouble(momentum.getText());
+			final int epochsValue = Integer.parseInt(epochs.getText());
+			final NetworkConfiguration configuration = new NetworkConfiguration(
+					epochsValue, hiddenUnitsCount, learningRateValue,
+					momentumValue);
+			callback.onApproximateClicked(configuration);
 		}
 	}
 
@@ -80,27 +99,33 @@ public class MenuPanel extends JPanel {
 
 		setBackground(Color.GRAY);
 
-		createAndAddConfigurationField("Hidden Units Count:", "6", 40, 20);
-		createAndAddConfigurationField("Learning Rate:", "0.01", 40, 20);
-		createAndAddConfigurationField("Momentum", "0.1", 40, 20);
-		createAndAddConfigurationField("Number of epochs:", "1000000", 80, 20);
+		hiddenUnits = createAndAddConfigurationField("Hidden Units Count:",
+				"6", 40, 20);
+		learningRate = createAndAddConfigurationField("Learning Rate:", "0.01",
+				40, 20);
+		momentum = createAndAddConfigurationField("Momentum", "0.1", 40, 20);
+		epochs = createAndAddConfigurationField("Number of epochs:", "1000000",
+				80, 20);
 
 		approximateButton = createAndAddButton(TEXT_APPROXIMATE,
 				new ApproximateOnMouseListener());
 		clearButton = createAndAddButton(TEXT_CLEAR, new ClearOnMouseListener());
 	}
 
-	public void createAndAddConfigurationField(final String label,
+	public JTextArea createAndAddConfigurationField(final String labelText,
 			final String defaultValue, final int width, final int height) {
-		final JLabel epochs = new JLabel(label);
-		final JTextArea epochsArea = new JTextArea(defaultValue);
-		final Dimension epochsFieldDimension = new Dimension(width, height);
-		epochsArea.setPreferredSize(epochsFieldDimension);
-		epochsArea.setMinimumSize(epochsFieldDimension);
-		epochsArea.setMaximumSize(epochsFieldDimension);
-		add(epochs);
-		add(epochsArea);
+		final JLabel label = new JLabel(labelText);
+		final JTextArea textArea = new JTextArea(defaultValue);
+		final Dimension textAreaDimension = new Dimension(width, height);
 
+		textArea.setPreferredSize(textAreaDimension);
+		textArea.setMinimumSize(textAreaDimension);
+		textArea.setMaximumSize(textAreaDimension);
+
+		add(label);
+		add(textArea);
+
+		return textArea;
 	}
 
 	public MenuPanel() {

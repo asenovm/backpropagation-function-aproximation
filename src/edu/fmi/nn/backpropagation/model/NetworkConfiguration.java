@@ -4,7 +4,7 @@ public class NetworkConfiguration {
 
 	private static final int DEFAULT_EPOCHS_COUNT = 1000000;
 
-	private static final double DEFAULT_ERROR_TOLERANCE = 0.01;
+	private static final double DEFAULT_ERROR_TOLERANCE = 0.00000001;
 
 	private static final double DEFAULT_LEARNING_RATE = 0.01;
 
@@ -23,11 +23,17 @@ public class NetworkConfiguration {
 	private double errorTolerance;
 
 	public NetworkConfiguration() {
-		setHiddenNodesCount(DEFAULT_HIDDEN_NODES_COUNT);
-		setMomentum(DEFAULT_MOMENTUM);
-		setLearningRate(DEFAULT_LEARNING_RATE);
+		this(DEFAULT_EPOCHS_COUNT, DEFAULT_HIDDEN_NODES_COUNT,
+				DEFAULT_LEARNING_RATE, DEFAULT_MOMENTUM);
+	}
+
+	public NetworkConfiguration(final int epochs, final int hiddenNodes,
+			final double learningRate, final double momentum) {
+		setHiddenNodesCount(hiddenNodes);
+		setMomentum(momentum);
+		setLearningRate(learningRate);
+		setEpochs(epochs);
 		setErrorTolerance(DEFAULT_ERROR_TOLERANCE);
-		setEpochs(DEFAULT_EPOCHS_COUNT);
 	}
 
 	public int getEpochs() {
