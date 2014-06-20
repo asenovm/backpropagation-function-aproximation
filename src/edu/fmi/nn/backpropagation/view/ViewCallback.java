@@ -4,5 +4,7 @@ public interface ViewCallback {
 
 	void onTrainClicked();
 
-	void onResetClicked();
+	void onClearClicked();
+
+	void onApproximateClicked();
 }

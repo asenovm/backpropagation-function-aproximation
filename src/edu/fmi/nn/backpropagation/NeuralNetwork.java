@@ -32,13 +32,13 @@ public class NeuralNetwork {
 	 */
 	private static final int MAX_NUM_EPOCHS = 1000000;
 
-	private final Layer inputLayer;
+	private Layer inputLayer;
 
-	private final Layer hiddenLayer;
+	private Layer hiddenLayer;
 
-	private final Layer outputLayer;
+	private Layer outputLayer;
 
-	public NeuralNetwork(final List<PointDouble> points) {
+	private void init(final List<PointDouble> points) {
 		final List<Node> inputNodes = new LinkedList<Node>();
 		for (int i = 0; i < points.size(); ++i) {
 			inputNodes.add(new Node());
@@ -77,9 +77,11 @@ public class NeuralNetwork {
 		inputLayer = Layer.from(inputNodes, Type.INPUT);
 		hiddenLayer = Layer.from(hiddenNodes, Type.HIDDEN);
 		outputLayer = Layer.from(outputNodes, Type.OUTPUT);
+
 	}
 
 	public void train(final List<PointDouble> points) {
+		init(points);
 		double[] inputValues = new double[points.size()];
 		double[] targetValues = new double[points.size()];
 

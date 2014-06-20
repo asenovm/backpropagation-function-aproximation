@@ -22,7 +22,11 @@ public class FunctionApproximation implements ViewCallback {
 
 	private final FunctionView view;
 
+	private final NeuralNetwork network;
+
 	public FunctionApproximation() {
+		network = new NeuralNetwork();
+
 		model = new FunctionModel();
 		view = new FunctionView(TITLE_APP);
 
@@ -44,15 +48,12 @@ public class FunctionApproximation implements ViewCallback {
 	@Override
 	public void onTrainClicked() {
 		final List<PointDouble> points = model.getPoints();
-		final NeuralNetwork network = new NeuralNetwork(points);
-
 		final List<PointDouble> trainPoints = new LinkedList<PointDouble>();
 		for (final PointDouble point : points) {
 			trainPoints.add(CoordinatesConverter.toNetworkCoordinates(point));
 		}
 		network.train(trainPoints);
 
-		view.onApproximationReady(getApproximation(points, network));
 	}
 
 	private List<PointDouble> getApproximation(final List<PointDouble> points,
@@ -75,7 +76,12 @@ public class FunctionApproximation implements ViewCallback {
 	}
 
 	@Override
-	public void onResetClicked() {
-		System.out.println("reset clicked");
+	public void onClearClicked() {
+		// blank as for now
+	}
+
+	@Override
+	public void onApproximateClicked() {
+		view.onApproximationReady(getApproximation(model.getPoints(), network));
 	}
 }

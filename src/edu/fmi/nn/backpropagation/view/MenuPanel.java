@@ -20,12 +20,17 @@ public class MenuPanel extends JPanel {
 	/**
 	 * {@value}
 	 */
-	private static final int WIDTH_BUTTON = 100;
+	private static final int WIDTH_BUTTON = 130;
 
 	/**
 	 * {@value}
 	 */
-	private static final String TEXT_RESET = "Reset";
+	private static final String TEXT_CLEAR = "Clear";
+
+	/**
+	 * {@value}
+	 */
+	private static final String TEXT_APPROXIMATE = "Approximate";
 
 	/**
 	 * {@value}
@@ -49,62 +54,25 @@ public class MenuPanel extends JPanel {
 
 	private ViewCallback callback;
 
-	private class TrainOnMouseListener implements MouseListener {
-
+	private class TrainOnMouseListener extends SimpleOnMouseListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			callback.onTrainClicked();
 		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-			// blank
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-			// blank
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			// blank
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			// blank
-		}
-
 	}
 
-	private class ResetOnMouseListener implements MouseListener {
-
+	private class ClearOnMouseListener extends SimpleOnMouseListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			callback.onResetClicked();
+			callback.onClearClicked();
 		}
+	}
 
+	private class ApproximateOnMouseListener extends SimpleOnMouseListener {
 		@Override
-		public void mouseEntered(MouseEvent e) {
-			// blank
+		public void mouseClicked(MouseEvent event) {
+			callback.onApproximateClicked();
 		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-			// blank
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			// blank
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			// blank
-		}
-
 	}
 
 	public MenuPanel(LayoutManager layout, boolean isDoubleBuffered) {
@@ -117,7 +85,8 @@ public class MenuPanel extends JPanel {
 		setPreferredSize(dimension);
 
 		createAndAddButton(TEXT_TRAIN, new TrainOnMouseListener());
-		createAndAddButton(TEXT_RESET, new ResetOnMouseListener());
+		createAndAddButton(TEXT_CLEAR, new ClearOnMouseListener());
+		createAndAddButton(TEXT_APPROXIMATE, new ApproximateOnMouseListener());
 
 		setBackground(Color.GRAY);
 	}

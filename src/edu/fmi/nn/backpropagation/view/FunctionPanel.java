@@ -160,4 +160,13 @@ public class FunctionPanel extends JPanel implements ModelListener {
 		repaint();
 	}
 
+	public void clear() {
+		if (points.isEmpty()) {
+			userInputPoints.clear();
+		} else {
+			points.clear();
+		}
+		repaint();
+	}
+
 }
