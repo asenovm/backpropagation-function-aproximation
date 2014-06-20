@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 import javax.swing.SwingUtilities;
 
 import edu.fmi.nn.backpropagation.model.FunctionModel;
+import edu.fmi.nn.backpropagation.model.NetworkConfiguration;
 import edu.fmi.nn.backpropagation.model.PointDouble;
 import edu.fmi.nn.backpropagation.model.ScreenInfo;
 import edu.fmi.nn.backpropagation.view.FunctionView;
@@ -29,7 +30,9 @@ public class FunctionApproximation implements ViewCallback {
 	private final ExecutorService executor;
 
 	public FunctionApproximation() {
-		network = new NeuralNetwork();
+		final NetworkConfiguration configuration = new NetworkConfiguration();
+
+		network = new NeuralNetwork(configuration);
 
 		model = new FunctionModel();
 		view = new FunctionView(TITLE_APP);

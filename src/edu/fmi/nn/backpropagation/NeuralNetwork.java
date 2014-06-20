@@ -6,37 +6,22 @@ import java.util.List;
 import java.util.Random;
 
 import edu.fmi.nn.backpropagation.Layer.Type;
+import edu.fmi.nn.backpropagation.model.NetworkConfiguration;
 import edu.fmi.nn.backpropagation.model.PointDouble;
 
 public class NeuralNetwork {
 
-	private static final int NUMBER_HIDDEN_NODES = 8;
-
-	/**
-	 * {@value}
-	 */
-	private static final double MOMENTUM = 0.1;
-
-	/**
-	 * {@value}
-	 */
-	private static final double LEARNING_RATE = 0.01;
-
-	/**
-	 * {@value}
-	 */
-	private static final double MAX_ERROR_TOLERANCE = 0.01;
-
-	/**
-	 * {@value}
-	 */
-	private static final int MAX_NUM_EPOCHS = 1000000;
+	private final NetworkConfiguration configuration;
 
 	private Layer inputLayer;
 
 	private Layer hiddenLayer;
 
 	private Layer outputLayer;
+
+	public NeuralNetwork(final NetworkConfiguration configuration) {
+		this.configuration = configuration;
+	}
 
 	private void init(final List<PointDouble> points) {
 		final List<Node> inputNodes = new LinkedList<Node>();
@@ -47,7 +32,7 @@ public class NeuralNetwork {
 		final Random random = new Random();
 
 		final List<Node> hiddenNodes = new LinkedList<Node>();
-		for (int i = 0; i < NUMBER_HIDDEN_NODES; ++i) {
+		for (int i = 0; i < configuration.getHiddenNodesCount(); ++i) {
 			hiddenNodes.add(new Node(random.nextDouble()));
 		}
 
@@ -106,7 +91,8 @@ public class NeuralNetwork {
 	private boolean isTraining(double[] targetValues, int epochsCount,
 			double[] yValues) {
 		final double error = getError(targetValues, yValues);
-		return epochsCount < MAX_NUM_EPOCHS && error > MAX_ERROR_TOLERANCE;
+		return epochsCount < configuration.getEpochs()
+				&& error > configuration.getTolerance();
 	}
 
 	private double getError(double[] target, double[] output) {
@@ -138,9 +124,9 @@ public class NeuralNetwork {
 			final List<Edge> edges = node.getEdges();
 			for (final Edge edge : edges) {
 				final Node end = edge.getEnd();
-				double delta = LEARNING_RATE * end.getGradient()
-						* node.getValue();
-				edge.addMomentum(MOMENTUM);
+				double delta = configuration.getLearningRate()
+						* end.getGradient() * node.getValue();
+				edge.addMomentum(configuration.getMomentum());
 				edge.addWeight(delta);
 			}
 		}
@@ -173,8 +159,8 @@ public class NeuralNetwork {
 	private void updateBiases(final List<Node> nodes) {
 		for (int i = 0; i < nodes.size(); ++i) {
 			final Node node = nodes.get(i);
-			double delta = LEARNING_RATE * node.getGradient();
-			node.addMomentum(MOMENTUM);
+			double delta = configuration.getLearningRate() * node.getGradient();
+			node.addMomentum(configuration.getMomentum());
 			node.addBias(delta);
 		}
 	}
