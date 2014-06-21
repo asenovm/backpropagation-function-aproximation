@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import edu.fmi.nn.backpropagation.ComputationCallback;
 import edu.fmi.nn.backpropagation.ModelListener;
@@ -51,6 +52,17 @@ public class FunctionPanel extends JPanel implements ModelListener,
 
 	private final CoordinateSystemView coordinateSystem;
 
+	private final Runnable repaintRunnable;
+
+	private boolean isTraining;
+
+	private class RepaintRunnable implements Runnable {
+		@Override
+		public void run() {
+			repaint();
+		}
+	}
+
 	public FunctionPanel(LayoutManager layout, boolean isDoubleBuffered) {
 		super(layout, isDoubleBuffered);
 
@@ -64,6 +76,8 @@ public class FunctionPanel extends JPanel implements ModelListener,
 		userInputPoints = new LinkedList<PointDouble>();
 
 		coordinateSystem = new CoordinateSystemView();
+
+		repaintRunnable = new RepaintRunnable();
 	}
 
 	public FunctionPanel() {
@@ -101,6 +115,23 @@ public class FunctionPanel extends JPanel implements ModelListener,
 		}
 
 		coordinateSystem.draw(graphics);
+
+		if (isTraining) {
+			final int fontStyle = Font.CENTER_BASELINE | Font.BOLD;
+			final Font font = new Font(Font.SANS_SERIF, fontStyle,
+					TEXT_WAIT_SIZE);
+			graphics.setFont(font);
+
+			FontMetrics fm = graphics.getFontMetrics(font);
+			Rectangle2D rect = fm.getStringBounds(TEXT_WAIT, graphics);
+
+			int textHeight = (int) (rect.getHeight());
+			int textWidth = (int) (rect.getWidth());
+
+			graphics.drawString(TEXT_WAIT, (ScreenInfo.WIDTH - textWidth) / 2,
+					(ScreenInfo.HEIGHT_PANE - textHeight) / 2);
+		}
+
 	}
 
 	@Override
@@ -111,11 +142,10 @@ public class FunctionPanel extends JPanel implements ModelListener,
 	}
 
 	@Override
-	public void onApproximationReady(List<PointDouble> function) {
-		System.out.println("approximation rdy with " + function);
+	public synchronized void onApproximationReady(List<PointDouble> function) {
 		this.points.clear();
 		this.points.addAll(function);
-		repaint();
+		SwingUtilities.invokeLater(repaintRunnable);
 	}
 
 	public boolean clear() {
@@ -132,26 +162,15 @@ public class FunctionPanel extends JPanel implements ModelListener,
 	}
 
 	@Override
-	public void onTrainStart() {
-		final Graphics graphics = getGraphics();
-
-		final int fontStyle = Font.CENTER_BASELINE | Font.BOLD;
-		final Font font = new Font(Font.SANS_SERIF, fontStyle, TEXT_WAIT_SIZE);
-		graphics.setFont(font);
-
-		FontMetrics fm = graphics.getFontMetrics(font);
-		Rectangle2D rect = fm.getStringBounds(TEXT_WAIT, graphics);
-
-		int textHeight = (int) (rect.getHeight());
-		int textWidth = (int) (rect.getWidth());
-
-		graphics.drawString(TEXT_WAIT, (ScreenInfo.WIDTH - textWidth) / 2,
-				(ScreenInfo.HEIGHT_PANE - textHeight) / 2);
+	public synchronized void onTrainStart() {
+		isTraining = true;
+		SwingUtilities.invokeLater(repaintRunnable);
 	}
 
 	@Override
-	public void onTrainEnd(final double trainError) {
-		repaint();
+	public synchronized void onTrainEnd(final double trainError) {
+		isTraining = false;
+		SwingUtilities.invokeLater(repaintRunnable);
 	}
 
 }

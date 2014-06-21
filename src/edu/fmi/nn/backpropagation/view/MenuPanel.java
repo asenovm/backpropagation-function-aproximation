@@ -175,6 +175,10 @@ public class MenuPanel extends JPanel implements ComputationCallback {
 	public void onTrainStart() {
 		approximateButton.setEnabled(false);
 		clearButton.setEnabled(false);
+		hiddenUnits.setEditable(false);
+		learningRate.setEditable(false);
+		epochs.setEditable(false);
+		momentum.setEditable(false);
 	}
 
 	public void onTrainEnd(final double trainError) {
