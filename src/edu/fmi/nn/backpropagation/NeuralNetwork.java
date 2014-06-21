@@ -77,6 +77,17 @@ public class NeuralNetwork {
 		return result;
 	}
 
+	public double getErrorForPoint(final PointDouble point) {
+		final double[] output = computeOutputs(new double[] { point.x });
+		return getError(new double[] { point.y }, output);
+	}
+
+	public void clear() {
+		inputLayer.reset();
+		hiddenLayer.reset();
+		outputLayer.reset();
+	}
+
 	public NeuralNetwork(final NetworkConfiguration configuration) {
 		this.configuration = configuration;
 		final List<Node> inputNodes = new LinkedList<Node>();

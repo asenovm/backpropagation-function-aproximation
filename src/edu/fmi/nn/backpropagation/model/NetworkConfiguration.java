@@ -10,7 +10,7 @@ public class NetworkConfiguration {
 
 	public static final int DEFAULT_EPOCHS_COUNT = 1000;
 
-	public static final double DEFAULT_ERROR_TOLERANCE = 0.00000000000001;
+	public static final double DEFAULT_ERROR_TOLERANCE = 0.0001;
 
 	public static final double DEFAULT_LEARNING_RATE = 0.2;
 
@@ -20,7 +20,7 @@ public class NetworkConfiguration {
 
 	public static final double DEFAULT_ERROR = 0.0;
 
-	public static final int DEFAULT_TRAIN_COUNT = 3000;
+	public static final int DEFAULT_TRAIN_COUNT = 10000;
 
 	private int numberOfEpochs;
 

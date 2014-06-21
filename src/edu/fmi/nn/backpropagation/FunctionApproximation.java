@@ -20,7 +20,7 @@ public class FunctionApproximation implements ViewCallback {
 
 	private final FunctionView view;
 
-	private final NeuralNetwork network;
+	private NeuralNetwork network;
 
 	private final ExecutorService executor;
 
@@ -45,7 +45,11 @@ public class FunctionApproximation implements ViewCallback {
 			for (int i = 0; i < configuration.getTrainCount(); ++i) {
 				error = 0.0;
 				for (final PointDouble point : trainPoints) {
-					error += network.train(point);
+					network.train(point);
+				}
+
+				for (final PointDouble point : trainPoints) {
+					error += network.getErrorForPoint(point);
 				}
 
 				if (error < configuration.getTolerance()) {
@@ -91,8 +95,9 @@ public class FunctionApproximation implements ViewCallback {
 	}
 
 	@Override
-	public void onClearClicked() {
+	public void onClearClicked(final NetworkConfiguration configuration) {
 		model.clear();
+		network = new NeuralNetwork(configuration);
 	}
 
 	private List<PointDouble> getApproximation() {

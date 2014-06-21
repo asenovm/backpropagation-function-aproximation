@@ -4,7 +4,7 @@ import edu.fmi.nn.backpropagation.model.NetworkConfiguration;
 
 public interface ViewCallback {
 
-	void onClearClicked();
+	void onClearClicked(final NetworkConfiguration configuration);
 
 	void onApproximateClicked(final NetworkConfiguration configuration);
 }

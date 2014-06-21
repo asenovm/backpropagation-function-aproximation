@@ -12,7 +12,6 @@ import java.awt.FlowLayout;
 import java.awt.LayoutManager;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.text.DecimalFormat;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -94,23 +93,14 @@ public class MenuPanel extends JPanel implements ComputationCallback,
 	private class ApproximateOnMouseListener extends SimpleOnMouseListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			final int hiddenUnitsCount = Integer
-					.parseInt(hiddenUnits.getText());
-			final double learningRateValue = Double.parseDouble(learningRate
-					.getText());
-			final double momentumValue = Double.parseDouble(momentum.getText());
-			final int epochsValue = Integer.parseInt(epochs.getText());
-			final NetworkConfiguration configuration = new NetworkConfiguration(
-					epochsValue, hiddenUnitsCount, learningRateValue,
-					momentumValue);
-			callback.onApproximateClicked(configuration);
+			callback.onApproximateClicked(getConfiguration());
 		}
 	}
 
 	private class ClearOnMouseListener extends SimpleOnMouseListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			callback.onClearClicked();
+			callback.onClearClicked(getConfiguration());
 		}
 	}
 
@@ -191,20 +181,21 @@ public class MenuPanel extends JPanel implements ComputationCallback,
 	}
 
 	public void onTrainStart() {
-		approximateButton.setEnabled(false);
-		clearButton.setEnabled(false);
-		hiddenUnits.setEditable(false);
-		learningRate.setEditable(false);
-		epochs.setEditable(false);
-		momentum.setEditable(false);
+		setMenuEnabled(false);
 	}
 
 	public void onTrainEnd(final double trainError) {
-		approximateButton.setEnabled(true);
-		clearButton.setEnabled(true);
-		final DecimalFormat decimalFormat = new DecimalFormat(
-				"#.###########################");
-		error.setText(decimalFormat.format(trainError));
+		setMenuEnabled(true);
+		error.setText(Double.toString(trainError));
+	}
+
+	private void setMenuEnabled(final boolean enabled) {
+		approximateButton.setEnabled(enabled);
+		clearButton.setEnabled(enabled);
+		hiddenUnits.setEditable(enabled);
+		learningRate.setEditable(enabled);
+		epochs.setEditable(enabled);
+		momentum.setEditable(enabled);
 	}
 
 	@Override
@@ -216,6 +207,16 @@ public class MenuPanel extends JPanel implements ComputationCallback,
 	public void onApproximationReady(List<PointDouble> function, double error) {
 		errorRunnable.errorValue = error;
 		SwingUtilities.invokeLater(errorRunnable);
+	}
+
+	private NetworkConfiguration getConfiguration() {
+		final int hiddenUnitsCount = Integer.parseInt(hiddenUnits.getText());
+		final double learningRateValue = Double.parseDouble(learningRate
+				.getText());
+		final double momentumValue = Double.parseDouble(momentum.getText());
+		final int epochsValue = Integer.parseInt(epochs.getText());
+		return new NetworkConfiguration(epochsValue, hiddenUnitsCount,
+				learningRateValue, momentumValue);
 	}
 
 }

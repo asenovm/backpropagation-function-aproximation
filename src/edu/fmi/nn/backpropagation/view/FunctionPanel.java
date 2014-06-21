@@ -93,7 +93,7 @@ public class FunctionPanel extends JPanel implements ModelListener,
 	}
 
 	@Override
-	public void paint(Graphics graphics) {
+	public synchronized void paint(Graphics graphics) {
 		super.paint(graphics);
 
 		final int[] xPoints = new int[points.size()];
@@ -145,11 +145,17 @@ public class FunctionPanel extends JPanel implements ModelListener,
 	}
 
 	@Override
-	public void onApproximationReady(List<PointDouble> function,
+	public void onApproximationReady(final List<PointDouble> function,
 			final double error) {
-		this.points.clear();
-		this.points.addAll(function);
-		SwingUtilities.invokeLater(repaintRunnable);
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				points.clear();
+				points.addAll(function);
+				repaint();
+			}
+		});
 	}
 
 	public boolean clear() {
@@ -166,13 +172,13 @@ public class FunctionPanel extends JPanel implements ModelListener,
 	}
 
 	@Override
-	public synchronized void onTrainStart() {
+	public void onTrainStart() {
 		isTraining = true;
 		SwingUtilities.invokeLater(repaintRunnable);
 	}
 
 	@Override
-	public synchronized void onTrainEnd(final double trainError) {
+	public void onTrainEnd(final double trainError) {
 		isTraining = false;
 		SwingUtilities.invokeLater(repaintRunnable);
 	}

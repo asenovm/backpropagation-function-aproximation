@@ -87,9 +87,9 @@ public class FunctionView extends JFrame implements ModelListener,
 	}
 
 	@Override
-	public void onClearClicked() {
+	public void onClearClicked(final NetworkConfiguration configuration) {
 		if (functionPanel.clear()) {
-			callback.onClearClicked();
+			callback.onClearClicked(configuration);
 		}
 	}
 
