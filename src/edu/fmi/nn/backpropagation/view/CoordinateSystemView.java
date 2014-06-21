@@ -5,6 +5,12 @@ import java.awt.Graphics;
 
 import edu.fmi.nn.backpropagation.model.ScreenInfo;
 
+/**
+ * A view, representing Oxy coordinate system
+ * 
+ * @author martin
+ * 
+ */
 public class CoordinateSystemView {
 
 	/**
@@ -27,6 +33,12 @@ public class CoordinateSystemView {
 	 */
 	private static final int STEP_SEPARATOR_COORDINATE_SYSTEM = 40;
 
+	/**
+	 * Draws the view on the given graphics canvas
+	 * 
+	 * @param graphics
+	 *            the graphics object used for painting the coordinate system
+	 */
 	public void draw(final Graphics graphics) {
 		graphics.setColor(Color.BLACK);
 		drawXAxisSeparators(graphics);

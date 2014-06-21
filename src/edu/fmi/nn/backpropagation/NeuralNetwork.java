@@ -8,6 +8,12 @@ import edu.fmi.nn.backpropagation.Layer.Type;
 import edu.fmi.nn.backpropagation.model.NetworkConfiguration;
 import edu.fmi.nn.backpropagation.model.PointDouble;
 
+/**
+ * A class to represent the whole neural network
+ * 
+ * @author martin
+ * 
+ */
 public class NeuralNetwork {
 
 	private NetworkConfiguration configuration;
@@ -18,7 +24,83 @@ public class NeuralNetwork {
 
 	private Layer outputLayer;
 
+	/**
+	 * Creates a new {@link NeuralNetwork} from the <tt>configuration</tt>
+	 * parameter given
+	 * 
+	 * @param configuration
+	 *            the network configuration that is to be respected when
+	 *            instantiating this class
+	 */
 	public NeuralNetwork(final NetworkConfiguration configuration) {
+		this.configuration = configuration;
+	}
+
+	/**
+	 * Trains the network to recognize the given <tt>points</tt>
+	 * 
+	 * @param points
+	 *            the points that are to be recognized by the network
+	 */
+	public void train(final List<PointDouble> points) {
+		init(points);
+		double[] inputValues = new double[points.size()];
+		double[] targetValues = new double[points.size()];
+
+		for (int i = 0; i < points.size(); ++i) {
+			inputValues[i] = points.get(i).x;
+			targetValues[i] = points.get(i).y;
+		}
+
+		int epochsCount = 0;
+		double[] yValues = computeOutputs(inputValues);
+
+		while (isTraining(targetValues, epochsCount, yValues)) {
+			updateWeights(targetValues);
+			yValues = computeOutputs(inputValues);
+			++epochsCount;
+		}
+	}
+
+	/**
+	 * Returns the output of the neural network for the given input values
+	 * 
+	 * @param inputValues
+	 *            the input of the network
+	 * 
+	 * @return the output of the network for the given <tt>input</tt>
+	 */
+	public double[] computeOutputs(double[] inputValues) {
+		final List<Node> inputNodes = inputLayer.getNodes();
+		final List<Node> outputNodes = outputLayer.getNodes();
+
+		inputLayer.reset();
+		hiddenLayer.reset();
+		outputLayer.reset();
+
+		for (int i = 0; i < inputValues.length; ++i) {
+			final Node node = inputNodes.get(i);
+			node.addValue(inputValues[i]);
+		}
+
+		computeOutput(inputLayer, hiddenLayer);
+		computeOutput(hiddenLayer, outputLayer);
+
+		final double[] result = new double[outputNodes.size()];
+		for (int i = 0; i < outputNodes.size(); ++i) {
+			result[i] = outputNodes.get(i).getValue();
+		}
+
+		return result;
+	}
+
+	/**
+	 * Sets the configuration that is to be used from the network
+	 * 
+	 * @param configuration
+	 *            the configuration that is to be used from the network
+	 */
+	public void setConfiguration(final NetworkConfiguration configuration) {
 		this.configuration = configuration;
 	}
 
@@ -61,27 +143,6 @@ public class NeuralNetwork {
 		inputLayer = Layer.from(inputNodes, Type.INPUT);
 		hiddenLayer = Layer.from(hiddenNodes, Type.HIDDEN);
 		outputLayer = Layer.from(outputNodes, Type.OUTPUT);
-
-	}
-
-	public void train(final List<PointDouble> points) {
-		init(points);
-		double[] inputValues = new double[points.size()];
-		double[] targetValues = new double[points.size()];
-
-		for (int i = 0; i < points.size(); ++i) {
-			inputValues[i] = points.get(i).x;
-			targetValues[i] = points.get(i).y;
-		}
-
-		int epochsCount = 0;
-		double[] yValues = computeOutputs(inputValues);
-
-		while (isTraining(targetValues, epochsCount, yValues)) {
-			updateWeights(targetValues);
-			yValues = computeOutputs(inputValues);
-			++epochsCount;
-		}
 	}
 
 	private boolean isTraining(double[] targetValues, int epochsCount,
@@ -161,30 +222,6 @@ public class NeuralNetwork {
 		}
 	}
 
-	public double[] computeOutputs(double[] inputValues) {
-		final List<Node> inputNodes = inputLayer.getNodes();
-		final List<Node> outputNodes = outputLayer.getNodes();
-
-		inputLayer.reset();
-		hiddenLayer.reset();
-		outputLayer.reset();
-
-		for (int i = 0; i < inputValues.length; ++i) {
-			final Node node = inputNodes.get(i);
-			node.addValue(inputValues[i]);
-		}
-
-		computeOutput(inputLayer, hiddenLayer);
-		computeOutput(hiddenLayer, outputLayer);
-
-		final double[] result = new double[outputNodes.size()];
-		for (int i = 0; i < outputNodes.size(); ++i) {
-			result[i] = outputNodes.get(i).getValue();
-		}
-
-		return result;
-	}
-
 	private void computeOutput(final Layer currentLayer, final Layer nextLayer) {
 		final List<Node> currentLayerNodes = currentLayer.getNodes();
 		final List<Node> nextLayerNodes = nextLayer.getNodes();
@@ -204,10 +241,6 @@ public class NeuralNetwork {
 			node.addValue(node.getBias());
 			node.setValue(nextLayer.applyActivation(node.getValue()));
 		}
-	}
-
-	public void setConfiguration(final NetworkConfiguration configuration) {
-		this.configuration = configuration;
 	}
 
 }

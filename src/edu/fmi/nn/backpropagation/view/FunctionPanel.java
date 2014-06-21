@@ -12,11 +12,12 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+import edu.fmi.nn.backpropagation.ComputationCallback;
 import edu.fmi.nn.backpropagation.ModelListener;
 import edu.fmi.nn.backpropagation.model.PointDouble;
 import edu.fmi.nn.backpropagation.model.ScreenInfo;
 
-public class FunctionPanel extends JPanel implements ModelListener {
+public class FunctionPanel extends JPanel implements ModelListener, ComputationCallback {
 
 	/**
 	 * {@value}
@@ -128,25 +129,26 @@ public class FunctionPanel extends JPanel implements ModelListener {
 		return result;
 	}
 
-	public void onStartTraining() {
+	@Override
+	public void onTrainStart() {
 		final Graphics graphics = getGraphics();
-
+		
 		final int fontStyle = Font.CENTER_BASELINE | Font.BOLD;
 		final Font font = new Font(Font.SANS_SERIF, fontStyle, TEXT_WAIT_SIZE);
 		graphics.setFont(font);
-
+		
 		FontMetrics fm = graphics.getFontMetrics(font);
 		Rectangle2D rect = fm.getStringBounds(TEXT_WAIT, graphics);
-
+		
 		int textHeight = (int) (rect.getHeight());
 		int textWidth = (int) (rect.getWidth());
-
+		
 		graphics.drawString(TEXT_WAIT, (ScreenInfo.WIDTH - textWidth) / 2,
 				(ScreenInfo.HEIGHT_PANE - textHeight) / 2);
-
 	}
 
-	public void onEndTraining() {
+	@Override
+	public void onTrainEnd() {
 		repaint();
 	}
 

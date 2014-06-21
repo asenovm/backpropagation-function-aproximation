@@ -1,11 +1,31 @@
 package edu.fmi.nn.backpropagation.model;
 
+/**
+ * A class that represents a point with real(double) coordinates
+ * 
+ * @author martin
+ * 
+ */
 public class PointDouble {
 
+	/**
+	 * The X-axis value associated with the point
+	 */
 	public final double x;
 
+	/**
+	 * The Y-axis value associated with the point
+	 */
 	public final double y;
 
+	/**
+	 * Creates a new point with the given coordinates
+	 * 
+	 * @param x
+	 *            the x value, associated with the point
+	 * @param y
+	 *            the y value, associated with the point
+	 */
 	public PointDouble(final double x, final double y) {
 		this.x = x;
 		this.y = y;
@@ -43,7 +63,5 @@ public class PointDouble {
 	public String toString() {
 		return x + " " + y;
 	}
-	
-	
 
 }

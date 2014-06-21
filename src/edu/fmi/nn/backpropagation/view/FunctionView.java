@@ -97,14 +97,14 @@ public class FunctionView extends JFrame implements ModelListener,
 
 	@Override
 	public void onTrainStart() {
-		menuPanel.onStartTraining();
-		functionPanel.onStartTraining();
+		menuPanel.onTrainStart();
+		functionPanel.onTrainStart();
 	}
 
 	@Override
 	public void onTrainEnd() {
-		menuPanel.onEndTraining();
-		functionPanel.onEndTraining();
+		menuPanel.onTrainEnd();
+		functionPanel.onTrainEnd();
 	}
 
 }

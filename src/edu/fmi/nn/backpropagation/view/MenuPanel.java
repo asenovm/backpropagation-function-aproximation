@@ -12,9 +12,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import edu.fmi.nn.backpropagation.ComputationCallback;
 import edu.fmi.nn.backpropagation.model.NetworkConfiguration;
 
-public class MenuPanel extends JPanel {
+public class MenuPanel extends JPanel implements ComputationCallback {
 
 	/**
 	 * {@value}
@@ -158,12 +159,12 @@ public class MenuPanel extends JPanel {
 		return button;
 	}
 
-	public void onStartTraining() {
+	public void onTrainStart() {
 		approximateButton.setEnabled(false);
 		clearButton.setEnabled(false);
 	}
 
-	public void onEndTraining() {
+	public void onTrainEnd() {
 		approximateButton.setEnabled(true);
 		clearButton.setEnabled(true);
 	}

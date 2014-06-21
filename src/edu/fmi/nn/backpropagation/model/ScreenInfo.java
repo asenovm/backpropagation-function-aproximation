@@ -1,5 +1,11 @@
 package edu.fmi.nn.backpropagation.model;
 
+/**
+ * A model class to keep information about the size of the screen
+ * 
+ * @author martin
+ * 
+ */
 public class ScreenInfo {
 
 	/**
