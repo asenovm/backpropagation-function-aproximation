@@ -6,11 +6,14 @@ import java.awt.FlowLayout;
 import java.awt.LayoutManager;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.text.NumberFormatter;
 
 import edu.fmi.nn.backpropagation.ComputationCallback;
 import edu.fmi.nn.backpropagation.model.NetworkConfiguration;
@@ -66,6 +69,8 @@ public class MenuPanel extends JPanel implements ComputationCallback {
 
 	private final JTextArea epochs;
 
+	private final JTextArea error;
+
 	private class ApproximateOnMouseListener extends SimpleOnMouseListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {
@@ -100,17 +105,19 @@ public class MenuPanel extends JPanel implements ComputationCallback {
 
 		setBackground(Color.GRAY);
 
+
 		hiddenUnits = createAndAddConfigurationField("Hidden Units Count:",
 				"6", 40, 20);
 		learningRate = createAndAddConfigurationField("Learning Rate:", "0.01",
 				40, 20);
 		momentum = createAndAddConfigurationField("Momentum", "0.1", 40, 20);
-		epochs = createAndAddConfigurationField("Number of epochs:", "1000000",
-				80, 20);
+		epochs = createAndAddConfigurationField("Number of Epochs:", "1000000", 80, 20);
 
 		approximateButton = createAndAddButton(TEXT_APPROXIMATE,
 				new ApproximateOnMouseListener());
 		clearButton = createAndAddButton(TEXT_CLEAR, new ClearOnMouseListener());
+		error = createAndAddConfigurationField("Error", "0.0", 180, 20);
+		error.setEnabled(false);
 	}
 
 	public JTextArea createAndAddConfigurationField(final String labelText,
@@ -164,9 +171,11 @@ public class MenuPanel extends JPanel implements ComputationCallback {
 		clearButton.setEnabled(false);
 	}
 
-	public void onTrainEnd() {
+	public void onTrainEnd(final double trainError) {
 		approximateButton.setEnabled(true);
 		clearButton.setEnabled(true);
+		final DecimalFormat decimalFormat = new DecimalFormat("#.###########################");
+		error.setText(decimalFormat.format(trainError));
 	}
 
 }

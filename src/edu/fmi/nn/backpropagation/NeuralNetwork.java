@@ -42,7 +42,7 @@ public class NeuralNetwork {
 	 * @param points
 	 *            the points that are to be recognized by the network
 	 */
-	public void train(final List<PointDouble> points) {
+	public double train(final List<PointDouble> points) {
 		init(points);
 		double[] inputValues = new double[points.size()];
 		double[] targetValues = new double[points.size()];
@@ -60,6 +60,7 @@ public class NeuralNetwork {
 			yValues = computeOutputs(inputValues);
 			++epochsCount;
 		}
+		return getError(targetValues, yValues);
 	}
 
 	/**

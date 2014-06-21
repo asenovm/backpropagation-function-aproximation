@@ -10,7 +10,7 @@ public class NetworkConfiguration {
 
 	private static final int DEFAULT_EPOCHS_COUNT = 1000000;
 
-	private static final double DEFAULT_ERROR_TOLERANCE = 0.00000001;
+	private static final double DEFAULT_ERROR_TOLERANCE = 0.00000000000001;
 
 	private static final double DEFAULT_LEARNING_RATE = 0.01;
 

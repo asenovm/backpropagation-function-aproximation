@@ -41,10 +41,11 @@ public class FunctionApproximation implements ViewCallback {
 						.toNetworkCoordinates(point));
 			}
 			network.setConfiguration(configuration);
-			network.train(trainPoints);
+			
+			final double error = network.train(trainPoints);
 
 			view.onApproximationReady(getApproximation());
-			view.onTrainEnd();
+			view.onTrainEnd(error);
 		}
 	}
 

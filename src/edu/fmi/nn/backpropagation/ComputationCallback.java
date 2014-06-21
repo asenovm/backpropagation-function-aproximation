@@ -16,5 +16,5 @@ public interface ComputationCallback {
 	/**
 	 * A callback fired when the training of the neural network has finished
 	 */
-	void onTrainEnd();
+	void onTrainEnd(final double trainError);
 }

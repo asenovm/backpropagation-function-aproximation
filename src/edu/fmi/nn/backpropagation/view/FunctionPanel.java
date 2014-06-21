@@ -17,7 +17,8 @@ import edu.fmi.nn.backpropagation.ModelListener;
 import edu.fmi.nn.backpropagation.model.PointDouble;
 import edu.fmi.nn.backpropagation.model.ScreenInfo;
 
-public class FunctionPanel extends JPanel implements ModelListener, ComputationCallback {
+public class FunctionPanel extends JPanel implements ModelListener,
+		ComputationCallback {
 
 	/**
 	 * {@value}
@@ -84,14 +85,16 @@ public class FunctionPanel extends JPanel implements ModelListener, ComputationC
 		final int[] xPoints = new int[points.size()];
 		final int[] yPoints = new int[points.size()];
 
+		graphics.setColor(Color.RED);
 		for (int i = 0; i < points.size(); ++i) {
 			final PointDouble point = points.get(i);
-			xPoints[i] = (int) Math.round(point.x);
-			yPoints[i] = (int) Math.round(point.y);
+			graphics.drawRect((int) point.x - WIDTH_POINT / 2, (int) point.y
+					- HEIGHT_POINT / 2, WIDTH_POINT, HEIGHT_POINT);
+			// xPoints[i] = (int) Math.round(point.x);
+			// yPoints[i] = (int) Math.round(point.y);
 		}
 
-		graphics.setColor(Color.RED);
-		graphics.drawPolyline(xPoints, yPoints, points.size());
+		// graphics.drawPolyline(xPoints, yPoints, points.size());
 
 		graphics.setColor(Color.BLUE);
 		for (final PointDouble point : userInputPoints) {
@@ -132,23 +135,23 @@ public class FunctionPanel extends JPanel implements ModelListener, ComputationC
 	@Override
 	public void onTrainStart() {
 		final Graphics graphics = getGraphics();
-		
+
 		final int fontStyle = Font.CENTER_BASELINE | Font.BOLD;
 		final Font font = new Font(Font.SANS_SERIF, fontStyle, TEXT_WAIT_SIZE);
 		graphics.setFont(font);
-		
+
 		FontMetrics fm = graphics.getFontMetrics(font);
 		Rectangle2D rect = fm.getStringBounds(TEXT_WAIT, graphics);
-		
+
 		int textHeight = (int) (rect.getHeight());
 		int textWidth = (int) (rect.getWidth());
-		
+
 		graphics.drawString(TEXT_WAIT, (ScreenInfo.WIDTH - textWidth) / 2,
 				(ScreenInfo.HEIGHT_PANE - textHeight) / 2);
 	}
 
 	@Override
-	public void onTrainEnd() {
+	public void onTrainEnd(final double trainError) {
 		repaint();
 	}
 
