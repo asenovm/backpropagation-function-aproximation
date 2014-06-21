@@ -88,13 +88,11 @@ public class FunctionPanel extends JPanel implements ModelListener,
 		graphics.setColor(Color.RED);
 		for (int i = 0; i < points.size(); ++i) {
 			final PointDouble point = points.get(i);
-			graphics.drawRect((int) point.x - WIDTH_POINT / 2, (int) point.y
-					- HEIGHT_POINT / 2, WIDTH_POINT, HEIGHT_POINT);
-			// xPoints[i] = (int) Math.round(point.x);
-			// yPoints[i] = (int) Math.round(point.y);
+			xPoints[i] = (int) Math.round(point.x);
+			yPoints[i] = (int) Math.round(point.y);
 		}
 
-		// graphics.drawPolyline(xPoints, yPoints, points.size());
+		graphics.drawPolyline(xPoints, yPoints, points.size());
 
 		graphics.setColor(Color.BLUE);
 		for (final PointDouble point : userInputPoints) {

@@ -32,9 +32,9 @@ public class Layer {
 	 */
 	public static Layer from(final List<Node> nodes, final Type type) {
 		if (type == Type.HIDDEN) {
-			return new Layer(nodes, new SigmoidFunction());
-		} else {
 			return new Layer(nodes, new HyperbolicTanFunction());
+		} else {
+			return new Layer(nodes, new SigmoidFunction());
 		}
 	}
 
