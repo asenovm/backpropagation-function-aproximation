@@ -8,19 +8,19 @@ package edu.fmi.nn.backpropagation.model;
  */
 public class NetworkConfiguration {
 
-	public static final int DEFAULT_EPOCHS_COUNT = 1000000;
+	public static final int DEFAULT_EPOCHS_COUNT = 1000;
 
 	public static final double DEFAULT_ERROR_TOLERANCE = 0.00000000000001;
 
-	public static final double DEFAULT_LEARNING_RATE = 0.01;
+	public static final double DEFAULT_LEARNING_RATE = 0.2;
 
 	public static final double DEFAULT_MOMENTUM = 0.1;
 
-	public static final int DEFAULT_HIDDEN_NODES_COUNT = 6;
+	public static final int DEFAULT_HIDDEN_NODES_COUNT = 4;
 
 	public static final double DEFAULT_ERROR = 0.0;
 
-	public static final int DEFAULT_TRAIN_COUNT = 2500;
+	public static final int DEFAULT_TRAIN_COUNT = 3000;
 
 	private int numberOfEpochs;
 

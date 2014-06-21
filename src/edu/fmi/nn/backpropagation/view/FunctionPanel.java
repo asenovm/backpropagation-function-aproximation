@@ -24,12 +24,12 @@ public class FunctionPanel extends JPanel implements ModelListener,
 	/**
 	 * {@value}
 	 */
-	private static final int HEIGHT_POINT = 4;
+	private static final int HEIGHT_POINT = 6;
 
 	/**
 	 * {@value}
 	 */
-	private static final int WIDTH_POINT = 4;
+	private static final int WIDTH_POINT = 6;
 
 	/**
 	 * {@value}
@@ -108,8 +108,11 @@ public class FunctionPanel extends JPanel implements ModelListener,
 
 		graphics.drawPolyline(xPoints, yPoints, points.size());
 
-		graphics.setColor(Color.BLUE);
 		for (final PointDouble point : userInputPoints) {
+			graphics.setColor(Color.BLACK);
+			graphics.drawOval((int) point.x - WIDTH_POINT / 2, (int) point.y
+					- HEIGHT_POINT / 2, WIDTH_POINT, HEIGHT_POINT);
+			graphics.setColor(Color.BLUE);
 			graphics.fillOval((int) point.x - WIDTH_POINT / 2, (int) point.y
 					- HEIGHT_POINT / 2, WIDTH_POINT, HEIGHT_POINT);
 		}
@@ -142,7 +145,7 @@ public class FunctionPanel extends JPanel implements ModelListener,
 	}
 
 	@Override
-	public synchronized void onApproximationReady(List<PointDouble> function,
+	public void onApproximationReady(List<PointDouble> function,
 			final double error) {
 		this.points.clear();
 		this.points.addAll(function);
