@@ -76,11 +76,14 @@ public class FunctionView extends JFrame implements ModelListener,
 	@Override
 	public void onUserPointAdded(final List<PointDouble> points) {
 		functionPanel.onUserPointAdded(points);
+		menuPanel.onUserPointAdded(points);
 	}
 
 	@Override
-	public void onApproximationReady(List<PointDouble> function) {
-		functionPanel.onApproximationReady(function);
+	public void onApproximationReady(List<PointDouble> function,
+			final double error) {
+		functionPanel.onApproximationReady(function, error);
+		menuPanel.onApproximationReady(function, error);
 	}
 
 	@Override

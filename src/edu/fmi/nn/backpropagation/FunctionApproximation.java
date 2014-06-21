@@ -1,6 +1,5 @@
 package edu.fmi.nn.backpropagation;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -29,7 +28,7 @@ public class FunctionApproximation implements ViewCallback {
 
 	private class ApproximationRunnable implements Runnable {
 
-		public NetworkConfiguration configuration;
+		private NetworkConfiguration configuration;
 
 		@Override
 		public void run() {
@@ -42,13 +41,20 @@ public class FunctionApproximation implements ViewCallback {
 						.toNetworkCoordinates(point));
 			}
 
-			for (int i = 0; i < 2500; ++i) {
+			double error = 0.0;
+			for (int i = 0; i < configuration.getTrainCount(); ++i) {
+				error = 0.0;
 				for (final PointDouble point : trainPoints) {
-					network.train(point);
+					error += network.train(point);
 				}
-				view.onApproximationReady(getApproximation());	
+
+				if (error < configuration.getTolerance()) {
+					break;
+				}
+
+				view.onApproximationReady(getApproximation(), error);
 			}
-			view.onTrainEnd(0);
+			view.onTrainEnd(error);
 		}
 	}
 

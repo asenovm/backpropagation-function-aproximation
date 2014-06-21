@@ -26,5 +26,5 @@ public interface ModelListener {
 	 * @param function
 	 *            the discrete representation of the given function
 	 */
-	void onApproximationReady(final List<PointDouble> function);
+	void onApproximationReady(final List<PointDouble> function, final double error);
 }

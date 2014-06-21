@@ -17,8 +17,10 @@ public class NetworkConfiguration {
 	public static final double DEFAULT_MOMENTUM = 0.1;
 
 	public static final int DEFAULT_HIDDEN_NODES_COUNT = 6;
-	
+
 	public static final double DEFAULT_ERROR = 0.0;
+
+	public static final int DEFAULT_TRAIN_COUNT = 2500;
 
 	private int numberOfEpochs;
 
@@ -103,6 +105,10 @@ public class NetworkConfiguration {
 	 */
 	public double getTolerance() {
 		return errorTolerance;
+	}
+
+	public int getTrainCount() {
+		return DEFAULT_TRAIN_COUNT;
 	}
 
 }

@@ -28,7 +28,8 @@ public class FunctionModel extends SimpleOnMouseListener {
 		}
 
 		@Override
-		public void onApproximationReady(List<PointDouble> function) {
+		public void onApproximationReady(List<PointDouble> function,
+				final double error) {
 			// blank
 		}
 

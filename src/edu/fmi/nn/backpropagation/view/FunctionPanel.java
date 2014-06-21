@@ -142,7 +142,8 @@ public class FunctionPanel extends JPanel implements ModelListener,
 	}
 
 	@Override
-	public synchronized void onApproximationReady(List<PointDouble> function) {
+	public synchronized void onApproximationReady(List<PointDouble> function,
+			final double error) {
 		this.points.clear();
 		this.points.addAll(function);
 		SwingUtilities.invokeLater(repaintRunnable);

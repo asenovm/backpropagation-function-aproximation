@@ -13,16 +13,21 @@ import java.awt.LayoutManager;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 import edu.fmi.nn.backpropagation.ComputationCallback;
+import edu.fmi.nn.backpropagation.ModelListener;
 import edu.fmi.nn.backpropagation.model.NetworkConfiguration;
+import edu.fmi.nn.backpropagation.model.PointDouble;
 
-public class MenuPanel extends JPanel implements ComputationCallback {
+public class MenuPanel extends JPanel implements ComputationCallback,
+		ModelListener {
 
 	/**
 	 * {@value}
@@ -75,6 +80,17 @@ public class MenuPanel extends JPanel implements ComputationCallback {
 
 	private final JTextArea error;
 
+	private final ErrorRunnable errorRunnable;
+
+	private class ErrorRunnable implements Runnable {
+		private double errorValue;
+
+		@Override
+		public void run() {
+			error.setText(Double.toString(errorValue));
+		}
+	}
+
 	private class ApproximateOnMouseListener extends SimpleOnMouseListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {
@@ -108,6 +124,8 @@ public class MenuPanel extends JPanel implements ComputationCallback {
 		setPreferredSize(dimension);
 
 		setBackground(Color.GRAY);
+
+		errorRunnable = new ErrorRunnable();
 
 		hiddenUnits = createAndAddConfigurationField("Hidden Units Count:",
 				Integer.toString(DEFAULT_HIDDEN_NODES_COUNT), 40, 20);
@@ -187,6 +205,17 @@ public class MenuPanel extends JPanel implements ComputationCallback {
 		final DecimalFormat decimalFormat = new DecimalFormat(
 				"#.###########################");
 		error.setText(decimalFormat.format(trainError));
+	}
+
+	@Override
+	public void onUserPointAdded(List<PointDouble> points) {
+		// blank
+	}
+
+	@Override
+	public void onApproximationReady(List<PointDouble> function, double error) {
+		errorRunnable.errorValue = error;
+		SwingUtilities.invokeLater(errorRunnable);
 	}
 
 }
