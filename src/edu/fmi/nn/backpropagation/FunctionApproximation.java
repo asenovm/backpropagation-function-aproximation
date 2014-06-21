@@ -32,6 +32,7 @@ public class FunctionApproximation implements ViewCallback {
 
 		@Override
 		public void run() {
+			model.setTraining(true);
 			view.onTrainStart();
 
 			final List<PointDouble> points = model.getPoints();
@@ -59,6 +60,7 @@ public class FunctionApproximation implements ViewCallback {
 				view.onApproximationReady(getApproximation(), error);
 			}
 			view.onTrainEnd(error);
+			model.setTraining(false);
 		}
 	}
 

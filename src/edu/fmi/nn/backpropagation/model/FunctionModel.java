@@ -20,6 +20,8 @@ public class FunctionModel extends SimpleOnMouseListener {
 
 	private ModelListener listener;
 
+	private boolean isTraining;
+
 	private static class SimpleModelListener implements ModelListener {
 
 		@Override
@@ -54,6 +56,10 @@ public class FunctionModel extends SimpleOnMouseListener {
 		this.listener = listener;
 	}
 
+	public synchronized void setTraining(final boolean isTraining) {
+		this.isTraining = isTraining;
+	}
+
 	/**
 	 * Returns an unmodifiable view over the points in the model
 	 * 
@@ -68,8 +74,10 @@ public class FunctionModel extends SimpleOnMouseListener {
 	 */
 	@Override
 	public void mouseClicked(MouseEvent event) {
-		points.add(new PointDouble(event.getX(), event.getY()));
-		listener.onUserPointAdded(getPoints());
+		if (!isTraining) {
+			points.add(new PointDouble(event.getX(), event.getY()));
+			listener.onUserPointAdded(getPoints());
+		}
 	}
 
 	/**
