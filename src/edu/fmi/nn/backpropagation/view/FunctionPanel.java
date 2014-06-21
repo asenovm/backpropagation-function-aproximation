@@ -112,6 +112,7 @@ public class FunctionPanel extends JPanel implements ModelListener,
 
 	@Override
 	public void onApproximationReady(List<PointDouble> function) {
+		System.out.println("approximation rdy with " + function);
 		this.points.clear();
 		this.points.addAll(function);
 		repaint();

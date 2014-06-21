@@ -41,12 +41,14 @@ public class FunctionApproximation implements ViewCallback {
 				trainPoints.add(CoordinatesConverter
 						.toNetworkCoordinates(point));
 			}
-			network.setConfiguration(configuration);
 
-			final double error = network.train(trainPoints);
-
-			view.onApproximationReady(getApproximation());
-			view.onTrainEnd(error);
+			for (int i = 0; i < 2500; ++i) {
+				for (final PointDouble point : trainPoints) {
+					network.train(point);
+				}
+				view.onApproximationReady(getApproximation());	
+			}
+			view.onTrainEnd(0);
 		}
 	}
 
@@ -88,27 +90,14 @@ public class FunctionApproximation implements ViewCallback {
 	}
 
 	private List<PointDouble> getApproximation() {
-		final List<PointDouble> points = model.getPoints();
 		final List<PointDouble> approximation = new LinkedList<PointDouble>();
-
-		int j = 0;
-		for (int i = 0; i < ScreenInfo.WIDTH / points.size(); ++i) {
-			final double[] input = new double[points.size()];
-
-			for (int p = 0; p < points.size(); ++p) {
-				input[p] = j++ / (double) ScreenInfo.WIDTH;
-			}
-
+		for (int i = 0; i < ScreenInfo.WIDTH; ++i) {
+			final double[] input = new double[] { (double) i / ScreenInfo.WIDTH };
 			final double[] output = network.computeOutputs(input);
-
-			for (int t = 0; t < points.size(); ++t) {
-				final PointDouble outputPoint = new PointDouble(input[t],
-						output[t]);
-				approximation.add(CoordinatesConverter
-						.toScreenCoordinates(outputPoint));
-			}
+			approximation.add(CoordinatesConverter
+					.toScreenCoordinates(new PointDouble(input[0], output[0])));
 		}
+
 		return approximation;
 	}
-
 }

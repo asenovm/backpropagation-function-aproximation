@@ -25,32 +25,14 @@ public class NeuralNetwork {
 	private Layer outputLayer;
 
 	/**
-	 * Creates a new {@link NeuralNetwork} from the <tt>configuration</tt>
-	 * parameter given
-	 * 
-	 * @param configuration
-	 *            the network configuration that is to be respected when
-	 *            instantiating this class
-	 */
-	public NeuralNetwork(final NetworkConfiguration configuration) {
-		this.configuration = configuration;
-	}
-
-	/**
 	 * Trains the network to recognize the given <tt>points</tt>
 	 * 
 	 * @param points
 	 *            the points that are to be recognized by the network
 	 */
-	public double train(final List<PointDouble> points) {
-		init(points);
-		double[] inputValues = new double[points.size()];
-		double[] targetValues = new double[points.size()];
-
-		for (int i = 0; i < points.size(); ++i) {
-			inputValues[i] = points.get(i).x;
-			targetValues[i] = points.get(i).y;
-		}
+	public double train(final PointDouble point) {
+		double[] inputValues = new double[] { point.x };
+		double[] targetValues = new double[] { point.y };
 
 		int epochsCount = 0;
 		double[] yValues = computeOutputs(inputValues);
@@ -95,21 +77,10 @@ public class NeuralNetwork {
 		return result;
 	}
 
-	/**
-	 * Sets the configuration that is to be used from the network
-	 * 
-	 * @param configuration
-	 *            the configuration that is to be used from the network
-	 */
-	public void setConfiguration(final NetworkConfiguration configuration) {
+	public NeuralNetwork(final NetworkConfiguration configuration) {
 		this.configuration = configuration;
-	}
-
-	private void init(final List<PointDouble> points) {
 		final List<Node> inputNodes = new LinkedList<Node>();
-		for (int i = 0; i < points.size(); ++i) {
-			inputNodes.add(new Node());
-		}
+		inputNodes.add(new Node());
 
 		final Random random = new Random();
 
@@ -119,9 +90,7 @@ public class NeuralNetwork {
 		}
 
 		final List<Node> outputNodes = new LinkedList<Node>();
-		for (int i = 0; i < points.size(); ++i) {
-			outputNodes.add(new Node(random.nextDouble()));
-		}
+		outputNodes.add(new Node(random.nextDouble()));
 
 		for (int i = 0; i < inputNodes.size(); ++i) {
 			final Node inputNode = inputNodes.get(i);
@@ -144,6 +113,7 @@ public class NeuralNetwork {
 		inputLayer = Layer.from(inputNodes, Type.INPUT);
 		hiddenLayer = Layer.from(hiddenNodes, Type.HIDDEN);
 		outputLayer = Layer.from(outputNodes, Type.OUTPUT);
+
 	}
 
 	private boolean isTraining(double[] targetValues, int epochsCount,
